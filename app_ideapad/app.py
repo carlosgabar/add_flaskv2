@@ -168,7 +168,7 @@ def crear():
     print(tiempo)
 
     documento   = request.files['documento']
-    basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actual
+    basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actuall
     filename = secure_filename(documento.filename) #Nombre original del archivoo
             
     extension           = os.path.splitext(filename)[1]
