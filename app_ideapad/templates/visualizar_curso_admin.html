@@ -1,0 +1,102 @@
+{% extends 'barra_nav_admin.html'  %}
+
+    {% block content %}
+    <div class="todo">
+
+    <div class="titulos">
+    {% for id, tema, ponente, inicio, fin, min, max, 
+        descripcion, localidad, salon, estado in curso %} 
+
+    <h1>{{tema}}</h1>
+    <h3>Ponente: {{ponente}}</h3>
+
+    {% endfor %}
+        </div>
+
+
+<div class="principal">
+
+<div class="valorescurso">  
+
+    <h3>Informacion</h3>
+
+    <div class="contenidoinformativo">
+
+    {% for id, tema, ponente, inicio, fin, min, max, 
+        descripcion, localidad, salon, estado in curso %} 
+        <p class="Minimo">Minimo de participantes: {{min}}</p>
+        <p class="Maximo">Maximo de participantes: {{max}}</p>
+        <p class="Fecha_inicio">Fecha de Inicio: {{inicio}}</p>
+        <p class="Fecha_fin">Fecha de Fin: {{fin}}</p>
+
+    {% endfor %}
+
+    <p class="inscritos">Trabajadores inscritos: {{inscritos}}</p>
+
+    </div>
+
+</div>
+
+<div class="contenidocurso">
+
+    <h3>Descripción del curso</h3>
+
+    <div class="descripcion">
+
+    {% for id, tema, ponente, inicio, fin, min, max, 
+        descripcion, localidad, salon, estado in curso  %}
+    <p>{{descripcion}}</p>
+
+    {% endfor %}
+
+    </div>
+
+</div>
+
+</div>
+
+
+<div class="listadoinscritos">
+
+<h4>Trabajadores inscritos</h4>
+
+        {% if trabajadores %}
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nombre</th>
+                    <th>Apellido</th>
+                    <th>Accion</th>
+                </tr>
+                <tbody>    {% for id, tema, ponente, inicio, fin, min, max, 
+                    descripcion, localidad, salon, estado in curso  %}
+                    {%for id_trabajador,nombre,apellido in trabajadores %}
+
+                    <td>
+                        {{ id_trabajador }}
+                    </td>
+                    <td>
+                        {{ nombre }}
+                    </td>
+                    <td>
+                        {{ apellido }}
+                    </td>
+                    <td> 
+                        <form action="{{ url_for('eliminarid', id=id_trabajador,idcurso=id) }}" method="get" style="display:inline;">
+                          <button type="submit">Eliminar</button>
+                        </form>
+                    </td>
+                </tbody>
+                    {% endfor %}
+                    {% endfor %}
+            </thead>
+        </table>
+        {% endif %}
+
+</div>
+
+</div>
+
+{% endblock %}

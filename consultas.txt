@@ -1,0 +1,63 @@
+SELECT * FROM curso_trabajador
+
+UPDATE curso SET nombre='deportes' WHERE id_curso=8
+
+SELECT nombre,fecha_inicio,fecha_fin FROM curso WHERE status='activo'
+
+SELECT * FROM curso WHERE status='activo'
+SELECT * FROM curso
+SELECT * FROM trabajador
+INSERT INTO curso_trabajador (id_curso,id_trabajador) VALUES (3,19823)
+UPDATE trabajador SET clave='12345' WHERE id_trabajador=200005
+UPDATE curso_trabajador SET status='finalizado' WHERE id_curso=3 and id_trabajador=200005
+SELECT * FROM tarea
+
+INSERT INTO tarea(id_curso,descripcion) VALUES (10,'merendar')
+INSERT INTO tarea(id_curso,descripcion) VALUES (10,'cenar')
+
+
+SELECT COUNT(*) FROM curso_trabajador tc
+JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+JOIN curso c on tc.id_curso=c.id_curso
+WHERE tc.status='finalizado'
+
+nextval('curso_id_curso_seq'::regclass)
+
+create sequence sec_idtarea
+start with 1
+increment by 1
+
+SELECT t.id_trabajador, t.nombre,t.apellido 
+                   FROM trabajador t
+                   JOIN curso_trabajador tc on t.id_trabajador = tc.id_trabajador
+                   JOIN curso c on tc.id_curso = c.id_curso
+                   WHERE c.id_curso=14
+
+SELECT t.descripcion FROM tarea t
+JOIN curso c on t.id_curso = c.id_curso
+WHERE c.id_curso=3
+
+
+SELECT nombre,fecha_inicio,fecha_fin FROM curso WHERE status='activo'
+UPDATE curso SET status='activo' WHERE id_curso=3
+SELECT t.descripcion
+FROM tarea t
+JOIN curso c ON t.id_curso=c.id_curso
+WHERE c.status='activo'
+
+SELECT c.nombre AS Curso, t.descripcion AS tarea
+FROM curso c
+INNER JOIN tarea t ON c.id_curso = t.id_curso
+
+SELECT
+    c.nombre,
+    c.fecha_inicio,
+    c.fecha_fin,
+    STRING_AGG(t.descripcion, ', ') AS tareas
+FROM
+    curso c
+INNER JOIN tarea t ON c.id_curso = t.id_curso
+WHERE
+    c.status = 'activo'
+GROUP BY
+    c.nombre, c.fecha_inicio, c.fecha_fin;

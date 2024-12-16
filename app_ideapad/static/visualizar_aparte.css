@@ -1,0 +1,116 @@
+.valorescurso .contenidoinformativo{
+
+    font-family: Verdana, Geneva, Tahoma, sans-serif;
+    color:darkcyan;
+    background:aliceblue;
+    width: 400px;
+    margin-left: 5px;
+    text-align: center;
+    height: 300px;
+    padding: 5px;
+    
+}
+
+.principal{
+
+    display: flex;
+    margin-top: 20px;
+    margin-bottom: 20px;
+
+}
+
+table{
+
+    border-collapse: collapse;
+    width: 50%;
+    margin:auto;
+    margin-top: 10px;
+
+}
+
+table th,td{
+
+    border: 1px solid;
+    background-color:aliceblue;
+    padding: 3px;
+    text-align: left;
+
+}
+
+
+.contenidocurso{
+
+    color: darkcyan;
+    margin-left: 150px;
+
+}
+
+.valorescurso{
+
+    color: darkcyan;
+}
+
+.contenidocurso .descripcion{
+
+
+    background:aliceblue;
+    width: 600px;
+    padding: 10px;
+    
+
+}
+
+.contenidocurso h3{
+
+    text-align: center;
+
+}
+
+.valorescurso h3{
+
+    text-align:center;
+}
+
+.listadoinscritos h4{
+
+    text-align: center;
+
+}
+
+.listadoinscritos table{
+
+    margin-bottom: 20px;
+    text-align: center;
+    width: 150px;
+
+}
+
+.todo{
+
+    display: block;
+
+}
+
+.titulos{
+
+    text-align: center;
+
+}
+
+.agregar .filtrosagregar{
+
+    display: flex;
+
+}
+
+.filtrosagregar .idagregar{
+
+    width:90px;
+
+}
+
+.inputsagregar{
+
+    margin-bottom: 20px;
+
+}

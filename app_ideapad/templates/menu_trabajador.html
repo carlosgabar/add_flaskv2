@@ -1,0 +1,38 @@
+{% extends 'barra_nav.html'  %}
+
+    {% block content %}
+
+    <div class="bloquegeneral">
+
+    <div class="bloqueactivo">
+
+        <h4>Activos</h4>
+        <h1>{{activos}}</h1>
+
+    </div>
+
+    <div class="bloqueprogreso">
+
+        <h4>En espera</h4>
+        <h1>{{espera}}</h1>
+
+    </div>
+
+    <div class="bloquefinalizado">
+
+        <h4>Finalizados</h4>
+        <h1>{{finalizados}}</h1>
+
+    </div>
+
+    <div class="bloquetotal">
+
+        <h4>Total</h4>
+        <h1></h1>
+
+    </div>
+
+    </div>
+
+    {% endblock %}
+

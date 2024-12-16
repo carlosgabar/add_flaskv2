@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistema de Gestion de Cursos</title>
+  <link rel="stylesheet" href="/static/css/bootstrap.min.css">
+  <link rel="stylesheet" href="/static/styles_login.css">
+  <link rel="stylesheet" href="/static/styles_menu.css">
+  <link rel="stylesheet" href="/static/visualizar_admin_cursos.css">
+  <link rel="stylesheet" href="/static/visualizar_aparte.css">
+  
+  <style>
+    .formularios {
+      display: none;
+    }
+  </style>
+  <script>
+
+  function mostrarFormulario(formulario) {
+    var formularios = document.getElementsByClassName("formularios");
+    for (var i = 0; i < formularios.length; i++) {
+      formularios[i].style.display = "none";
+    }
+    
+    document.getElementById(formulario).style.display = "block";
+  }
+
+  document.addEventListener('DOMContentLoaded', function() { mostrarFormulario('editar'); });
+
+  </script>
+  
+</head>
+<body>
+
+  <div class="barra-nav">
+    <nav class="navbar navbar-expand navbar-light" style="background-color: #e3f2fd;">
+        <div class="container-fluid">
+            <ul class="nav navbar-nav me-auto"> <!-- "me-auto" empuja el logo a la derecha -->
+                <li class="nav-item">
+                    <a class="nav-link" href="/">Cursos</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/visualizar">Visualizar</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/cerrar_admin">Cerrar Sesion</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="/login_trabajador">Trabajador</a>
+                </li>
+            </ul>
+            <img src="/static/img/logopequiven.png" class="logo" alt="Logo" style="height: 70px;"> <!-- Logo a la derecha -->
+        </div>
+    </nav>
+</div>
+
+    <div class="container ">
+
+        {% block content %}
+
+        {% endblock %}
+    
+    </div>
+
+    <script src="/static/js/bootstrap.min.js"></script>
+
+</body>
+</html>
+

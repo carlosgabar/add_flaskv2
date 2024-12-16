@@ -1,0 +1,70 @@
+.bloquegeneral{
+
+    display: flex;
+    margin-top: 5px;
+    margin-left: 15%;
+    
+
+}
+
+
+.bloquegeneral h1{
+
+    color:whitesmoke;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    text-align: center;
+    
+}
+
+.bloquegeneral h4{
+
+    color:whitesmoke;
+    font-family: Georgia, 'Times New Roman', Times, serif;
+    
+
+}
+
+.bloquefinalizado{
+
+    background-color: #e74c3c;
+    border-radius: 10px;
+    padding: 10px;
+    margin-right: 20px;
+    width: 200px;
+}
+
+
+.bloqueprogreso{
+
+    background-color: #f1c40f;
+    margin-right: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+}
+
+.bloqueactivo{
+
+    background-color: #16a085;
+    margin-right: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+}
+
+.bloquetotal{
+
+    background-color: #5dade2;
+    margin-right: 20px;
+    padding: 10px;
+    border-radius: 10px;
+    width: 200px;
+}
+
+
+
+
+
+
+
+

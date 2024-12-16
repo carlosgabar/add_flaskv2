@@ -1,0 +1,115 @@
+{% extends 'barra_nav_admin.html'  %}
+
+{% block content %}
+
+<div class="stats">
+
+  <h1>Cursos Finalizados</h1>
+  <table>
+      <thead>
+          <tr>
+            <th>ID</th>
+            <th>Titulo</th>
+            <th>Ponente</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Fin</th>
+            <th>Minimo de participantes</th>
+            <th>Maximo de participantes</th>
+            <th>Localidad</th>
+            <th>Salon</th>
+            <th>Status</th>
+          </tr>
+      </thead>
+      <tbody>
+        {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
+          localidad,salon,status,horas in finalizados %}
+          <tr>
+            <td>{{id_curso}}</td>
+            <td>{{nombre}}</td>
+            <td>{{ponente}}</td>
+            <td>{{fecha_inicio}}</td>
+            <td>{{fecha_fin}}</td>
+            <td>{{minimo}}</td>
+            <td>{{maximo}}</td>
+            <td>{{localidad}}</td>
+            <td>{{salon}}</td>
+            <td>{{status}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+  
+  <h1 class="progreso">Cursos En Progreso</h1>
+  <table>
+      <thead>
+          <tr>
+            <th>ID</th>
+            <th>Titulo</th>
+            <th>Ponente</th>
+            <th>Fecha de Inicio</th>
+            <th>Fecha de Fin</th>
+            <th>Minimo de participantes</th>
+            <th>Maximo de participantes</th>
+            <th>Localidad</th>
+            <th>Salon</th>
+            <th>Status</th>
+          </tr>
+      </thead>
+      <tbody>
+        {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
+          localidad,salon,status,horas in progreso %}
+          <tr>
+            <td>{{id_curso}}</td>
+            <td>{{nombre}}</td>
+            <td>{{ponente}}</td>
+            <td>{{fecha_inicio}}</td>
+            <td>{{fecha_fin}}</td>
+            <td>{{minimo}}</td>
+            <td>{{maximo}}</td>
+            <td>{{localidad}}</td>
+            <td>{{salon}}</td>
+            <td>{{status}}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+
+  <h1 class="activos">Cursos Activos</h1>
+  <table>
+    <thead>
+        <tr>
+          <th>ID</th>
+          <th>Titulo</th>
+          <th>Ponente</th>
+          <th>Fecha de Inicio</th>
+          <th>Fecha de Fin</th>
+          <th>Minimo de participantes</th>
+          <th>Maximo de participantes</th>
+          <th>Localidad</th>
+          <th>Salon</th>
+          <th>Status</th>
+        </tr>
+    </thead>
+    <tbody>
+      {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
+        localidad,salon,status,horas in activos %}
+        <tr>
+          <td>{{id_curso}}</td>
+          <td>{{nombre}}</td>
+          <td>{{ponente}}</td>
+          <td>{{fecha_inicio}}</td>
+          <td>{{fecha_fin}}</td>
+          <td>{{minimo}}</td>
+          <td>{{maximo}}</td>
+          <td>{{localidad}}</td>
+          <td>{{salon}}</td>
+          <td>{{status}}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  </div>
+
+{% endblock %}
+

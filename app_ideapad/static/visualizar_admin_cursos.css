@@ -1,0 +1,54 @@
+body {
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+}
+
+.stats h1{
+
+    text-align: center;
+    color: red;
+    background-color: lightcoral;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+}
+
+.stats .activos{
+
+    text-align: center;
+    color: green;
+    background-color:lightgreen;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+}
+
+.stats .progreso{
+
+    text-align: center;
+    color:white;
+    background-color:lightblue;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+
+}
+
+
+
+.stats table {
+    border-collapse: collapse;
+    width: 100%;
+}
+
+.stats th, .stats td {
+    border: 1px solid rgb(9, 9, 9);
+    padding: 3px;
+    text-align: left;
+    background-color: white;
+}
+
+.stats th {
+    background-color: #f2f2f2;
+}
+
+.stats h1 {
+    color: white;
+}

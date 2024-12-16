@@ -1,0 +1,234 @@
+body {
+    background-image: url("img/fondo_imagen.jpg");
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    background-size: cover;
+    background-color: white;
+
+}
+
+.barra-nav .nav-link {
+
+  margin-right: 15px;
+  color:darkcyan;
+  font-size: 18px;
+
+}
+
+.cont-menu{
+  margin-top:-5px;
+  padding:10px;
+  background:aliceblue;
+  width: 300px;
+  height: 520px;
+  display: inline-block;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  
+ 
+}
+
+.cont-menu ul{
+
+  list-style: none;
+  text-decoration: none;
+  
+}
+
+.cont-menu .menu li a{
+
+  display: block;
+  padding:15px 5px;
+  color:darkcyan;
+  list-style: none;
+  text-decoration: none;
+
+}
+
+.cont-menu .menu li a:hover{
+  color:white
+
+}
+
+.cont-menu .menu .icono{
+  font-size: 18px;
+  margin-right: 10px;
+}
+
+.despliegue{
+
+  text-align: center;
+  font-size: 30px;
+  margin-bottom: 10px;
+  
+}
+
+.nav-item:last-child a {
+  float: right;
+  margin-left: auto;
+}
+
+.formularios {
+  display: none;
+  flex-grow: 1; 
+}
+
+.container {
+  display: flex;
+}
+
+.agrupar{
+
+  display:block;
+  margin-right: 150px;
+}
+
+.formularios h2{
+
+  color:darkcyan;
+  font-size: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+
+}
+
+
+.despliegue h3{
+
+  font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif;
+
+
+}
+
+.formularios{
+
+
+  margin-top:40px;
+  padding:10px;
+  background:aliceblue;
+  width: 400px;
+  height: 450px;
+  display: inline-block;
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  overflow-y:scroll;
+
+
+}
+
+.ordenar label{
+
+  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+  color:darkcyan;
+  display:block;
+
+
+}
+
+.listado table{
+
+  border-collapse: collapse;
+  width: 50%;
+  margin:auto;
+  margin-top: 10px;
+  
+}
+
+.listado th, .listado td{
+
+  border: 1px solid rgb(9, 9, 9);
+  padding: 3px;
+  text-align: left;
+  background-color: white;
+
+}
+
+.jugadores .arreglarid input{
+  
+  width:55px;
+  margin-bottom: 10px;
+
+}
+
+.jugadores .arreglarboton{
+  margin-top: 10px;
+  display: block;
+  margin-left:220px;
+
+}
+
+.golesjugador input{
+  
+  width:55px;
+  margin-bottom: 10px;
+
+}
+
+.golesjugador .arreglarbotongoles{
+  margin-top: 10px;
+ 
+  margin-left:220px;
+
+}
+
+.boton_admin{
+
+
+    margin-left: 1000px;
+
+}
+
+.boton_admin{
+
+
+    margin-left: 1000px;
+
+}
+.boton_trabajador{
+
+
+    margin-left: 900px;
+
+}
+
+.ordenar .botones .min,.max{
+
+  width: 60px;
+
+}
+
+.ordenar .boton{
+
+  
+ 
+  margin-left:250px;
+
+  margin-bottom: 10px;
+
+}
+
+.ordenar .botonid{
+
+  width: 60px;
+
+}
+
+.ordenar .ajustar input{
+
+  width: 100%;
+
+}
+
+
+.ordenar textarea{
+
+  resize: none;
+  width:100%;
+
+}
+
+
+.visualizar .filtros{
+
+  
+  display:flex;
+
+}

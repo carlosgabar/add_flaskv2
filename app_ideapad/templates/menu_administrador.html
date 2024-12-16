@@ -1,0 +1,502 @@
+{% extends 'barra_nav_admin.html'  %}
+
+    {% block content %}
+
+<script>
+
+  function ventanaemergente(){
+
+    alert("Fecha-FIN mayor a Fecha-INICIO");
+
+  }
+
+  window.onload=function(){
+
+    {% if mensaje  %}
+
+      ventanaemergente();
+
+    {% endif %}
+
+  };
+
+</script>
+
+<div class="agrupar">
+  <div class="despliegue">
+
+    <h3>Gestion de capacitaciones</h3>
+
+  </div>
+
+  <div class="cont-menu">
+
+    <ul class="menu">
+      <li ><a href="#">Crear capacitacion</a>
+        <ul>
+          <li><a href="#" onclick="mostrarFormulario('crear')">Crear capacitacion</a></li>
+        </ul>
+      </li>
+      <li ><a href="#">Visualizar </a>
+        <ul>
+          <li><a href="#" onclick="mostrarFormulario('visualizar')">Visualizar </a></li>
+          <li><a href="/#" >Estadisticas</a> <!-- ESTADISTICAS POR TRABAJADOR, VISTAS POR ADMINISTRADOR  -->
+          <li><a href="/cal" >Calendario</a>
+        </ul>
+      </li>
+      <li ><a href="#">Editar</a>      
+        <ul>
+          <li><a href="#" onclick="mostrarFormulario('editar')">Editar </a></li>  
+          <li><a href="#" onclick="mostrarFormulario('agregar')">Agregar trabajador </a></li> <!-- AGREGAR TRABAJADOR A ALGUN CURSO EN ESPECIFICO  -->
+        </ul>
+      </li>
+    </ul>
+  </div>
+</div>
+<div class="container">
+
+<div id="crear" class="formularios">
+    
+  <div class="ordenar">
+    <h2>Formulario para Crear Capacitacion</h2>
+
+  <form id="equipoForm" action="/crear" method="post" enctype="multipart/form-data">
+
+    <div class="ajustar">
+    <label for="nombrecurso">Titulo del curso</label>
+    <input type="text" id="nombrecurso" name="nombrecurso" required>
+
+    <label for="mombreponente">Ponente del curso</label>
+    <input type="text" id="nombreponente" name="nombreponente" required>
+
+    </div>
+
+    <div class="linea">
+
+    <label for="fecha_inicio">Fecha de inicio</label>
+    <input type="date" id="fechainicio" name="fechainicio" required>
+
+    <label for="fecha_fin">Fecha de Fin</label>
+    <input type="date" id="fechafin" name="fechafin"  required>
+
+    <div class="botones">
+
+    <label for="minparticipantes">Minimo de participantes</label>
+    <input class="min" type="number" id="minparticipantes" min=0 name="minparticipantes" required>
+
+    <label for="maxparticipantes">Maximo de Participantes</label>
+    <input class="max" type="number" id="maxparticipantes" min=0 name="maxparticipantes" required>
+
+    </div>
+
+    </div>
+
+    <div class="ajustar">
+
+    <label for="localidad">Localidad del curso</label>
+    <input type="text" id="localidad" name="localidad" required>
+
+    <label for="salon">Salon/Edificio</label>
+    <input type="text" id="salon" name="salon"  required>
+
+    </div>
+
+    <label for="salon">Hora de Inicio</label>
+    <input type="time" id="tiempo" name="tiempo"  required>
+
+    <label for="descripcion">Descripcion del Curso</label>
+    <textarea name="descripcion" cols="70" rows="8"></textarea>
+
+    <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
+    <input class="documento" type="file" id="documento" name="documento">
+
+    <button class="boton" type="submit">Enviar</button>
+    </div>
+
+  </form>
+</div>
+
+<div id="editar" class="formularios">
+  <h2>Formulario para Editar Curso</h2>
+  <div class="listado">
+    <table>
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Tema</th>
+          <th>Ponente</th>
+          <th>Fecha de Inicio</th>
+          <th>Fecha de Fin</th>
+          <th>Minimo de Participantes</th>
+          <th>Maximo de participantes</th>
+          <th>Accion</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for id,tema,ponente,inicio,fin,min,max,descripcion,localidad,salon,estado,horas in cursos %}
+        <tr>
+          <td>{{id}}</td>
+          <td>{{tema}}</td>
+          <td>{{ponente}}</td>
+          <td>{{inicio}}</td>
+          <td>{{fin}}</td>
+          <td>{{min}}</td>
+          <td>{{max}}</td>
+          <td>
+            <button onclick="openModal('{{id}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Modal -->
+  <div id="modal" style="display:none;">
+    <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <form id="editarform" action="/editar" method="post">
+        
+        <div class="form-group">
+          <label for="estatus">Status</label>
+          <select id="status" name="status">
+            <option value="activo">Activo</option>
+            <option value="finalizado">Finalizado</option>
+            <option value="progreso">En Progreso</option>
+          </select>
+          <label for="idformacion">ID</label>
+          <input type="number" id="idformacion" name="idformacion" min="0">
+        </div>
+        
+        <label for="nombrecurso">Titulo del curso</label>
+        <input type="text" id="nombrecursoo" name="nombrecursoo">
+
+        <label for="nombreponente">Ponente del curso</label>
+        <input type="text" id="nombreponentee" name="nombreponentee"  >
+        <div class="form-groupp">
+        <label for="fecha_inicio">Inicio</label>
+        <input type="date" id="fechainicioo" name="fechainicioo" required>
+
+        <label for="fecha_fin">Fin</label>
+        <input type="date" id="fechafinn" name="fechafinn" required>
+
+        </div>
+        <div class="form-grouppp">
+
+        <label for="minparticipantes">Minimo de participantes</label>
+        <input type="number" id="minparticipantess" name="minparticipantess" min=0 required>
+
+        <label for="maxparticipantes">Maximo de Participantes</label>
+        <input type="number" id="maxparticipantess" name="maxparticipantess" min=0 required>
+
+      </div>
+       
+        <label for="localidad">Localidad</label>
+        <input type="text" id="localidadd" name="localidadd" required>
+
+        <label for="salon">Salon/Edificio</label>
+        <input type="text" id="salonn" name="salonn" required>
+
+        <label for="descripcion">Descripcion del Curso</label>
+        <textarea name="descripcion" id="descripcion" cols="70" rows="8"></textarea>
+
+        <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
+        <input class="documento" type="file" id="documento" name="documento">
+
+        <div class="editar"><button class="boton" type="submit">Editar</button></div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script>
+  function openModal(id, tema, ponente, inicio, fin, min, max, descripcion, localidad, salon) {
+
+    console.log("Mostrando modal con los siguientes datos:", {
+    id: id,
+    tema: tema,
+    ponente: ponente,
+    inicio: inicio,
+    fin: fin,
+    min: min,
+    max: max,
+    descripcion: descripcion,
+    localidad: localidad,
+    salon: salon
+});
+
+    atributoid=id
+    atributotema=tema
+    console.log(atributotema)
+
+    console.log("ID:", id);
+    console.log("Tema:", tema);
+    console.log("Ponente:", ponente);
+    console.log("Inicio:", inicio);
+    console.log("Fin:", fin);
+    console.log("Min:", min);
+    console.log("Max:", max);
+    console.log("Descripción:", descripcion);
+    console.log("Localidad:", localidad);
+    console.log("Salón:", salon);
+
+    document.getElementById('idformacion').value = id;
+    document.getElementById('nombrecursoo').value = tema;
+    document.getElementById('nombreponentee').value = ponente;
+    document.getElementById('fechainicioo').value = inicio;
+    document.getElementById('fechafinn').value = fin;
+    document.getElementById('minparticipantess').value = min;
+    document.getElementById('maxparticipantess').value = max;
+    document.getElementById('descripcion').value = descripcion;
+    document.getElementById('localidadd').value = localidad;
+    document.getElementById('salonn').value = salon;
+
+    document.getElementById('modal').style.display = 'block';
+  }
+
+  function closeModal() {
+    document.getElementById('modal').style.display = 'none';
+  }
+</script>
+
+<style>
+
+  .editar{
+
+    text-align: center;
+
+  }
+
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+.form-groupp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+.form-grouppp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+
+  /* Estilos para el modal */
+  #modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1000; /* Asegura que se muestre sobre otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Alto completo */
+    overflow-y:scroll;
+   
+    background-color: rgb(0,0,0); /* Color de fondo negro */
+    background-color: rgba(0,0,0,0.4); /* Fondo negro con opacidad */
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Centrado vertical */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ancho del modal */
+    max-width: 600px; /* Ancho máximo */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra */
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  /* Input Styles */
+#modal input[type="text"],
+#modal input[type="number"],
+#modal input[type="date"],
+#modal textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modal select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modal button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+</style>
+
+
+<div id="visualizar" class="formularios">
+
+  <div class="filtros">
+
+  <label for="desde">Desde</label> 
+  <input type="date" id="desde_" name="desde_" onchange="filterCourses()" >
+
+  <label for="hasta">Hasta</label> 
+  <input type="date" id="hasta_" name="hasta_" onchange="filterCourses()" >
+
+  <label for="status">Filtrar</label> 
+  <select id="status_" onchange="filterCourses()"  >
+
+
+    <option value="activo">Activos</option>
+    <option value="finalizado">Finalizados</option>
+    <option value="progreso">En Progreso</option>
+  </select>
+
+  </div>
+
+  <div class="listado"> 
+    <table> 
+      <thead> 
+        <tr> 
+          <th>ID</th> 
+          <th>Tema</th> 
+          <th>Ponente</th> 
+          <th>Fecha de Inicio</th> 
+          <th>Fecha de Fin</th> 
+          <th>Minimo de Participantes</th> 
+          <th>Maximo de Participantes</th> 
+          <th>Acción</th>
+          <th>Editar</th> 
+        </tr> </thead> 
+        <tbody id="course-list"> {% for id, tema, ponente, inicio, fin, min, max, 
+          descripcion, localidad, salon, estado,horas,minutos in listado %} 
+          <tr> 
+            <td>{{ id }}</td> 
+            <td>{{ tema }}</td> 
+            <td>{{ ponente }}</td> 
+            <td>{{ inicio }}</td> 
+            <td>{{ fin }}</td> 
+            <td>{{ min }}</td> 
+            <td>{{ max }}</td> 
+            <td>{{ estado }}</td>
+          </tr> {% endfor %} 
+        </tbody> 
+      </table> 
+    </div>
+
+  <script> 
+  function filterCourses() { 
+  const status = document.getElementById('status_').value;
+  const desde = document.getElementById('desde_').value; 
+  const hasta = document.getElementById('hasta_').value; 
+
+  const xhr = new XMLHttpRequest(); 
+  xhr.open('POST', '/visualizarpor', true); 
+  xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+  
+  xhr.onload = function() { if (this.status === 200) { 
+    document.getElementById('course-list').innerHTML = this.responseText; } };
+  
+  xhr.send('status_=' + status + '&desde_=' + desde + '&hasta_=' + hasta ); } 
+  </script>
+ 
+</div>
+
+<div id="agregar" class="formularios">
+
+  <div class="filtrosagregar">
+
+  <h2>Inscripción</h2>
+
+  <form id="agregar" action="/agregartrabajador" method="post">
+
+<div class="inputsagregar">
+<label for="id">ID del trabajador</label>
+<input type="number" id="id" name="id" class="idagregar">
+<label for="id">ID del curso</label>
+<input type="number" id="idcurso" name="idcurso" class="idagregar">
+<button class="boton" type="submit">Inscribir</button>
+</div>
+</form>
+<label for="status">Filtrar</label> 
+<select id="statuss" onchange="filterCoursess()"  >
+
+    <option value="activo">Activos</option>
+    <option value="progreso">En Progreso</option>
+</select>
+
+</div>
+
+<div class="listado"> 
+  <table> 
+    <thead> 
+      <tr> 
+        <th>ID</th> 
+        <th>Tema</th> 
+        <th>Ponente</th> 
+        <th>Fecha de Inicio</th> 
+        <th>Fecha de Fin</th> 
+        <th>Minimo de Participantes</th> 
+        <th>Maximo de Participantes</th> 
+        <th>Acción</th>
+      </tr> </thead> 
+      <tbody id="course-listt"> {% for id, tema, ponente, inicio, fin, min, max, 
+        descripcion, localidad, salon, estado in listado %} 
+        <tr> 
+          <td>{{ id }}</td> 
+          <td>{{ tema }}</td> 
+          <td>{{ ponente }}</td> 
+          <td>{{ inicio }}</td> 
+          <td>{{ fin }}</td> 
+          <td>{{ min }}</td> 
+          <td>{{ max }}</td> 
+          <td>{{ estado }}</td>
+        </tr> {% endfor %} 
+      </tbody> 
+    </table> 
+  </div>
+
+  <script> 
+    function filterCoursess() { 
+    const status = document.getElementById('statuss').value;
+
+    const xhr = new XMLHttpRequest(); 
+    xhr.open('POST', '/agregar', true); 
+    xhr.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded'); 
+    
+    xhr.onload = function() { if (this.status === 200) { 
+      document.getElementById('course-listt').innerHTML = this.responseText; } };
+    
+    xhr.send('statuss=' + status); } 
+    </script>
+
+</div>  
+
+</div>
+
+    {% endblock %}
