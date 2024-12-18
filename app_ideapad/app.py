@@ -163,7 +163,8 @@ def crear():
     parrafo=request.form['descripcion']
     localidad=request.form['localidad']
     salon=request.form['salon']
-    tiempo=request.form['tiempo']
+    tiempo=request.form['horainicio']
+    canthoras=request.form['canthoras']
 
     print(tiempo)
 
@@ -187,15 +188,12 @@ def crear():
     fecha2=datetime.strptime(fechafin,'%Y-%m-%d')
 
     fechayhora=datetime.combine(fecha1,hora1)
-    print(fechayhora)
-
+    
     if fecha2 >= fecha1:
 
-        cursor.execute('''INSERT INTO curso (id_curso, nombre, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora)
-                VALUES (nextval('curso_id_curso_seq'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s)''',
-                (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo))
-
-
+        cursor.execute('''INSERT INTO curso (id_curso, nombre, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras)
+                VALUES (nextval('curso_id_curso_seq'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras))
     else:
 
         mensaje=True
@@ -227,15 +225,20 @@ def editar():
     parrafo=request.form['descripcion']
     localidad=request.form['localidad']
     salon=request.form['salon']
+    tiempo=request.form['horainicio']
+    canthoras=request.form['canthoras']
 
+    hora1=datetime.strptime(tiempo,'%H:%M').time()
     fecha1=datetime.strptime(fechainicio,'%Y-%m-%d')
     fecha2=datetime.strptime(fechafin,'%Y-%m-%d')
+
+    fechayhora=datetime.combine(fecha1,hora1)
 
     if fecha2 >= fecha1:
 
         cursor.execute('''UPDATE curso SET nombre=%s,ponente=%s,fecha_inicio=%s,fecha_fin=%s
-                ,minimo=%s,maximo=%s ,descripcion=%s,localidad=%s,salon=%s,status=%s WHERE id_curso=%s ''', (nombre,nombreponente,fechainicio,fechafin,minparticipantes,maxparticipantes,parrafo,
-                                                                                                   localidad,salon,opcion,id))
+                ,minimo=%s,maximo=%s ,descripcion=%s,localidad=%s,salon=%s,status=%s,canthoras=%s WHERE id_curso=%s ''', (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,
+                                                                                                   localidad,salon,opcion,canthoras,id))
 
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
@@ -490,6 +493,7 @@ def eventos():
             'tareas': [{'tarea': tarea} for tarea in tareas]
         }
     })
+        
 
     conectar.commit()
     cursor.close()

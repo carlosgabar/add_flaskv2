@@ -191,7 +191,7 @@ body {
 
 .ordenar .botones .min,.max{
 
-  width: 60px;
+  width: 10%;
 
 }
 
@@ -207,7 +207,7 @@ body {
 
 .ordenar .botonid{
 
-  width: 60px;
+  width: 60%;
 
 }
 
@@ -232,3 +232,86 @@ body {
   display:flex;
 
 }
+
+.botones{
+
+  display: flex;
+  
+  
+
+}
+.linea{
+
+  margin-top: 2%;
+
+}
+
+.fechas{
+
+  display: flex;
+  
+
+}
+
+.fechas label{
+
+  margin-right: 2%;
+  
+}
+
+.fechas input{
+
+  margin-right: 2%;
+  
+}
+
+.fechas{
+
+  margin-left: 5%;
+  margin-top: 2%;
+
+}
+
+
+.botones label{
+
+  margin-right: 2%;
+
+}
+
+.botones input{
+
+  margin-right: 2%;
+  
+
+}
+
+.botones{
+
+  margin-left: 5%;
+  margin-top: 2%;
+
+}
+
+.tiempo label{
+
+  margin-right: 2%;
+
+}
+
+.tiempo input{
+
+  margin-right: 2%;
+  
+
+}
+
+.tiempo{
+
+  margin-left: 5%;
+  margin-top: 2%;
+  display: flex;
+
+}
+
+.tiempo input#canthoras { width: 10% }

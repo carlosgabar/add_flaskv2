@@ -22,7 +22,7 @@
       </thead>
       <tbody>
         {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-          localidad,salon,status,horas in finalizados %}
+          localidad,salon,status,horas,canthoras in finalizados %}
           <tr>
             <td>{{id_curso}}</td>
             <td>{{nombre}}</td>
@@ -57,7 +57,7 @@
       </thead>
       <tbody>
         {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-          localidad,salon,status,horas in progreso %}
+          localidad,salon,status,horas,canthoras in progreso %}
           <tr>
             <td>{{id_curso}}</td>
             <td>{{nombre}}</td>
@@ -92,7 +92,7 @@
     </thead>
     <tbody>
       {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-        localidad,salon,status,horas in activos %}
+        localidad,salon,status,horas,canthoras in activos %}
         <tr>
           <td>{{id_curso}}</td>
           <td>{{nombre}}</td>

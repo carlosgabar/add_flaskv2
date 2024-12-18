@@ -71,13 +71,28 @@
 
     </div>
 
-    <div class="linea">
+    
+
+    <div class="fechas">
 
     <label for="fecha_inicio">Fecha de inicio</label>
     <input type="date" id="fechainicio" name="fechainicio" required>
 
     <label for="fecha_fin">Fecha de Fin</label>
     <input type="date" id="fechafin" name="fechafin"  required>
+
+  </div>
+
+  <div class="ajustar">
+
+    <label for="localidad">Localidad del curso</label>
+    <input type="text" id="localidad" name="localidad" required>
+
+    <label for="salon">Salon/Edificio</label>
+    <input type="text" id="salon" name="salon"  required>
+
+    </div>
+
 
     <div class="botones">
 
@@ -89,7 +104,7 @@
 
     </div>
 
-    </div>
+    
 
     <div class="ajustar">
 
@@ -101,8 +116,16 @@
 
     </div>
 
-    <label for="salon">Hora de Inicio</label>
-    <input type="time" id="tiempo" name="tiempo"  required>
+    <div class="tiempo">
+
+
+    <label for="Hora">Hora de Inicio</label>
+    <input type="time" id="horainicio" name="horainicio"  required>
+
+    <label for="Hora">Cantidad de Horas</label>
+    <input type="number" id="canthoras" name="canthoras"  required>
+
+    </div>
 
     <label for="descripcion">Descripcion del Curso</label>
     <textarea name="descripcion" cols="70" rows="8"></textarea>
@@ -133,7 +156,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for id,tema,ponente,inicio,fin,min,max,descripcion,localidad,salon,estado,horas in cursos %}
+        {% for id,tema,ponente,inicio,fin,min,max,descripcion,localidad,salon,estado,horas,canthoras in cursos %}
         <tr>
           <td>{{id}}</td>
           <td>{{tema}}</td>
@@ -196,6 +219,16 @@
 
         <label for="salon">Salon/Edificio</label>
         <input type="text" id="salonn" name="salonn" required>
+
+        <div class="form-groupppp">
+
+        <label for="Hora">Hora de Inicio</label>
+        <input type="time" id="horainicio" name="horainicio"  required>
+    
+        <label for="Hora">Cantidad de Horas</label>
+        <input type="number" id="canthoras" name="canthoras"  required>
+  
+        </div>
 
         <label for="descripcion">Descripcion del Curso</label>
         <textarea name="descripcion" id="descripcion" cols="70" rows="8"></textarea>
@@ -284,6 +317,13 @@
   align-items: center;
   gap: 2%; /* Adjust the gap as needed */
 }
+
+.form-groupppp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
 
 
   /* Estilos para el modal */
