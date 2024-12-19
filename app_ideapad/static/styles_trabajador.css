@@ -1,14 +1,15 @@
-.bloquegeneral{
+.bloquecuadros{
 
     display: flex;
-    margin-top: 5px;
+    margin-top: 5%;
     margin-left: 15%;
+    margin-bottom: 5%;
     
 
 }
 
 
-.bloquegeneral h1{
+.bloquecuadros h1{
 
     color:whitesmoke;
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -16,7 +17,7 @@
     
 }
 
-.bloquegeneral h4{
+.bloquecuadros h4{
 
     color:whitesmoke;
     font-family: Georgia, 'Times New Roman', Times, serif;
@@ -62,9 +63,74 @@
 }
 
 
+.general{
+
+    display: inline-block;
+    width: 100%;
+
+}
+
+.activos{
+
+    margin-bottom: 3%;
 
 
+}
+
+.editarfinalizados{
+
+    margin-bottom: 3%;
 
 
+}
 
+.progresos{
+
+    margin-bottom: 3%;
+
+}
+
+.accordion.activos  .accordion-button { 
+    background-color: #16a085;
+    color: white;
+     border: none; 
+    }
+
+.accordion.editarfinalizados .accordion-button { 
+    background-color: #e74c3c;
+    color: white;
+    border: none; 
+         }
+    
+.accordion.progresos .accordion-button { 
+    background-color: #f1c40f;
+    color: white;
+    border: none; 
+             
+}
+
+
+#activos{
+
+    color: #16a085;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    
+
+}
+
+#progreso{
+
+    color: #f1c40f;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    
+
+}
+
+#finalizado{
+
+    color: #e74c3c;
+    font-family: 'Lucida Sans', 'Lucida Sans Regular', 'Lucida Grande', 'Lucida Sans Unicode', Geneva, Verdana, sans-serif
+    
+
+}
 

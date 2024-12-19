@@ -27,7 +27,9 @@ def inicio():
     cursor=conectar.cursor()
 
     cursor.execute('''SELECT * FROM curso''')
+    
     cursos=cursor.fetchall()
+    print(cursos)
     conectar.commit()
     cursor.close()
     conectar.close()
@@ -85,11 +87,35 @@ def menutrabajador(id):
                    WHERE tc.status='espera' and tc.id_trabajador=%s ''',(id,))
     espera=cursor.fetchone()
 
+    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
+                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+                   WHERE c.status='activo' and tc.status='activo' and t.id_trabajador=%s ''',(id,))
+    
+    cursosactivos=cursor.fetchall()
+
+    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
+                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+                   WHERE c.status='progreso' and tc.status='progreso' and t.id_trabajador=%s ''',(id,))
+    
+    cursosprogreso=cursor.fetchall()
+
+    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
+                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+                   WHERE c.status='finalizado' and tc.status='finalizado' and t.id_trabajador=%s ''',(id,))
+    
+    cursosfinalizados=cursor.fetchall()
+
+    print(cursosfinalizados)
+    
     conectar.commit()
     cursor.close()
     conectar.close()
 
-    return render_template('menu_trabajador.html',activos=activos[0],espera=espera[0],finalizados=finalizados[0])
+    return render_template('menu_trabajador.html',activos=activos[0],espera=espera[0],finalizados=finalizados[0],
+                           cursosactivos=cursosactivos,cursosprogreso=cursosprogreso,cursosfinalizados=cursosfinalizados)
 
 @app.route('/login_admin')
 def loginadmin():
@@ -145,6 +171,13 @@ def cerrarsesion():
     
     session.clear()
     return redirect('/login_admin')
+
+
+@app.route('/cerrar_trabajador')
+def cerrarsesiont():
+    
+    session.clear()
+    return redirect('/login_trabajador')
 
 @app.route('/crear',methods=['POST'])
 def crear():
@@ -242,6 +275,7 @@ def editar():
 
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
+    print(cursos)
     conectar.commit()
     cursor.close()
     conectar.close()
@@ -462,7 +496,7 @@ def cal():
 
 @app.route('/eventoscalendario')
 def eventos():
-
+    """
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
@@ -498,6 +532,37 @@ def eventos():
     conectar.commit()
     cursor.close()
     conectar.close()
+
+    return jsonify(lista_cursos)
+
+    """
+
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor()
+
+    cursor.execute('''SELECT c.nombre,c.fecha_inicio
+                   FROM curso c
+                   WHERE c.status='activo' 
+                   GROUP BY c.nombre,c.fecha_inicio''')
+    
+    infocurso=cursor.fetchall()
+    print(infocurso)
+
+    lista_cursos = []
+    for curso in infocurso:
+        title, start_date = curso
+        lista_cursos.append({
+        'title': title,
+        'start': start_date.isoformat()
+    })
+        
+
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+    print(lista_cursos)
 
     return jsonify(lista_cursos)
 

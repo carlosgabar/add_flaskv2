@@ -1,39 +1,65 @@
 <!DOCTYPE html>
-<html>
-  <head>
-
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src='/static/index.global.min.js'></script>
-    <script src='/static/index.global.js'></script>
+    
+    <title>Calendario de Eventos</title>
+    <style>
+        /* Estilos opcionales para el calendario */
 
+        .fc-event {
+            border-radius: 5px;
+            padding: 10px;
+            color:white; /* Color del texto */
+            font-weight: bold; /* Negrita */
+            text-align: center; /* Centrar texto */
+            background-color:#18bf2f;/* Color de fondo */
+            border: 1px solid #0056b3; /* Color del borde */
+        }
+
+        /* Estilo adicional para eventos al pasar el mouse */
+        .fc-event:hover {
+            opacity: 0.8; /* Efecto de hover */
+        }
+
+        /* Estilos para timeGridWeek y timeGridDay */ 
+        .fc-timeGridWeek-view .fc-event, .fc-timeGridDay-view .fc-event 
+        {   border-radius: 5px;
+            padding: 5px;
+            color: white; /* Color del texto */
+            font-weight: bold; /* Negrita */
+            text-align: center; /* Centrar texto */
+            background-color:#18bf2f;/* Color de fondo */
+            border: 1px solid #0056b3; /* Color del borde */} 
+
+            .fc-timeGridWeek-view .fc-time, .fc-timeGridDay-view .fc-time { color: darkred; /* Color del texto para el tiempo */ }
+        
+
+    </style>
+</head>
+<body>
+    <div id='calendar'></div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        var calendarEl = document.getElementById('calendar');
-        var calendar = new FullCalendar.Calendar(calendarEl, {
-          initialView: 'dayGridMonth',
-          events:'/eventoscalendario',
-          timezone: 'America/Los_Angeles',
-         
-          eventContent: function(arg) {
-            return {
-                html: `
-                    <div>${arg.event.title}</div>
-                    <div>${new Date(arg.event.start).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
-                    <ul>
-                        ${arg.event.extendedProps.tareas.map(tarea => `
-                            <li>${tarea.tarea}</li>
-                        `).join('')}
-                    </ul>
-                `
-            };
-        }
-        });
-        calendar.render();
-      });
+        document.addEventListener('DOMContentLoaded', function() {
+            var calendarEl = document.getElementById('calendar');
 
+            var calendar = new FullCalendar.Calendar(calendarEl, {
+                initialView: 'dayGridMonth',
+                events: '/eventoscalendario', // URL que devuelve los eventos
+                headerToolbar: {
+                    left: 'prev,next today',
+                    center: 'title',
+                    right: 'dayGridMonth,timeGridWeek,timeGridDay'
+                },
+                editable: false,
+                eventLimit: true // permite que se muestren más eventos si hay demasiados
+            });
+
+            calendar.render();
+        });
     </script>
-  </head>
-  <body>
-    <div id='calendar'></div>
-  </body>
+</body>
 </html>

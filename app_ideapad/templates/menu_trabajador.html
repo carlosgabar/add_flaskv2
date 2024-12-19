@@ -2,7 +2,9 @@
 
     {% block content %}
 
-    <div class="bloquegeneral">
+    <div class="general">
+
+    <div class="bloquecuadros">
 
     <div class="bloqueactivo">
 
@@ -30,6 +32,71 @@
         <h4>Total</h4>
         <h1></h1>
 
+    </div>
+
+    </div>
+
+    <h2 id="activos">Cursos En progreso</h2>
+
+    <div class="accordion activos" id="accordionactivos"> 
+        {% for titulo, ponente, descripcion in cursosactivos %} 
+        <div class="accordion-item"> 
+            <h2 class="accordion-header" id="headingactivos{{ loop.index }}"> 
+                <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
+                type="button" data-bs-toggle="collapse" 
+                data-bs-target="#collapseactivos{{ loop.index }}" 
+                aria-expanded="{{ 'true' if loop.first else 'false' }}" 
+                aria-controls="collapseactivos{{ loop.index }}"> {{ titulo }} 
+            </button> </h2> 
+            <div id="collapseactivos{{ loop.index }}" 
+            class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
+            data-bs-parent="#accordionactivos"> 
+            <div class="accordion-body"> <strong>{{ ponente }}</strong> {{ descripcion }} </div> 
+        </div> 
+    </div>
+     {% endfor %}
+    </div>
+
+    <h2 id="progreso">Cursos En Espera</h2>
+
+    <div class="accordion progresos" id="accordionprogreso"> 
+        {% for titulo, ponente, descripcion in cursosprogreso %} 
+        <div class="accordion-item"> 
+            <h2 class="accordion-header" id="headingprogreso{{ loop.index }}"> 
+                <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
+                type="button" data-bs-toggle="collapse" 
+                data-bs-target="#collapseprogreso{{ loop.index }}" 
+                aria-expanded="{{ 'true' if loop.first else 'false' }}" 
+                aria-controls="collapseprogreso{{ loop.index }}"> {{ titulo }} 
+            </button> </h2> 
+            <div id="collapseprogreso{{ loop.index }}" 
+            class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="heading{{ loop.index }}" 
+            data-bs-parent="#accordionprogreso"> 
+            <div class="accordion-body"> <strong>{{ ponente }}</strong> {{ descripcion }} </div> 
+        </div> 
+    </div>
+     {% endfor %}
+    </div>
+
+    <h2 id="finalizado">Cursos Finalizados</h2>
+
+    <div class="accordion editarfinalizados" id="accordionfin"> 
+        {% for titulo, ponente, descripcion in cursosfinalizados %} 
+        <div class="accordion-item"> 
+            <h2 class="accordion-header" id="headingfin{{ loop.index }}"> 
+                <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
+                type="button" data-bs-toggle="collapse" 
+                data-bs-target="#collapsefin{{ loop.index }}" 
+                aria-expanded="{{ 'true' if loop.first else 'false' }}" 
+                aria-controls="collapsefin{{ loop.index }}"> {{ titulo }} 
+            </button> </h2> 
+            <div id="collapsefin{{ loop.index }}" 
+            class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="heading{{ loop.index }}" 
+            data-bs-parent="#accordionfin"> 
+            <div class="accordion-body"> <strong>{{ ponente }}</strong> {{ descripcion }} </div> 
+        </div> 
+    </div>
+     {% endfor %}
     </div>
 
     </div>

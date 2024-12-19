@@ -169,6 +169,12 @@
             <button onclick="openModal('{{id}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
           </td>
         </tr>
+
+        <script> console.log('ID:', '{{ id }}'); 
+          console.log('Inicio:', '{{ inicio }}'); console.log('Fin:', '{{ fin }}'); console.log('Min:', '{{ min }}'); console.log('Max:', '{{ max }}');  console.log('Localidad:', '{{ localidad|escape }}'); console.log('Salon:', '{{ salon|escape }}');
+       </script>
+
+
         {% endfor %}
       </tbody>
     </table>
