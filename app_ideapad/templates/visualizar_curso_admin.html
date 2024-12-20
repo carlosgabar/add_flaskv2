@@ -5,7 +5,7 @@
 
     <div class="titulos">
     {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado in curso %} 
+        descripcion, localidad, salon, estado,hora,canthoras in curso %} 
 
     <h1>{{tema}}</h1>
     <h3>Ponente: {{ponente}}</h3>
@@ -23,7 +23,7 @@
     <div class="contenidoinformativo">
 
     {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado in curso %} 
+        descripcion, localidad, salon, estado,hora,canthoras in curso %} 
         <p class="Minimo">Minimo de participantes: {{min}}</p>
         <p class="Maximo">Maximo de participantes: {{max}}</p>
         <p class="Fecha_inicio">Fecha de Inicio: {{inicio}}</p>
@@ -44,7 +44,7 @@
     <div class="descripcion">
 
     {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado in curso  %}
+        descripcion, localidad, salon, estado,horas,canthoras in curso  %}
     <p>{{descripcion}}</p>
 
     {% endfor %}
@@ -71,7 +71,7 @@
                     <th>Accion</th>
                 </tr>
                 <tbody>    {% for id, tema, ponente, inicio, fin, min, max, 
-                    descripcion, localidad, salon, estado in curso  %}
+                    descripcion, localidad, salon, estado,hora,canthoras in curso  %}
                     {%for id_trabajador,nombre,apellido in trabajadores %}
 
                     <td>

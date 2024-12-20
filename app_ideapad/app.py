@@ -408,7 +408,7 @@ def visualizarcurso(id):
                    WHERE c.id_curso=%s 
                    ''',(id,))
     trabajadores=cursor.fetchall()
-
+    print(trabajadores)
     conectar.commit()
     cursor.close()
     conectar.close()
