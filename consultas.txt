@@ -4,6 +4,18 @@ UPDATE curso SET nombre='deportes' WHERE id_curso=8
 
 SELECT nombre,fecha_inicio,fecha_fin FROM curso WHERE status='activo'
 
+SELECT t.nombre,t.apellido,t.id_trabajador,c.nombre,c.ponente
+FROM trabajador t
+JOIN curso_trabajador tc on t.id_trabajador = tc.id_trabajador
+JOIN curso c on tc.id_curso = c.id_curso
+WHERE tc.status='finalizado' and c.status='finalizado' 
+and tc.id_curso=3 
+
+SELECT c.nombre AS Curso, t.descripcion AS tarea
+FROM curso c
+INNER JOIN tarea t ON c.id_curso = t.id_curso
+
+
 SELECT * FROM curso WHERE status='activo'
 SELECT * FROM curso
 SELECT * FROM trabajador
