@@ -1,10 +1,21 @@
-from flask import Flask
+from flask import Flask,send_file
 from flask import render_template,redirect,session,request,jsonify,url_for
 from db import get_connection
 import datetime
 import os
 from werkzeug.utils import secure_filename 
 from datetime import datetime
+from PyPDF2 import PdfWriter, PdfReader
+from io import BytesIO
+
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, landscape
+import reportlab.rl_config
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+
+import io
+
 
 app=Flask(__name__,template_folder='templates', static_folder='static')
 app.secret_key="curso"
@@ -20,11 +31,11 @@ def conectar_bd():
 @app.route('/')
 def inicio():
 
-    if not 'login' in session:
-        return redirect("/login_admin")
-    
     conectar=conectar_bd()
     cursor=conectar.cursor()
+
+    if not 'login' in session:
+        return redirect("/login_admin")
 
     cursor.execute('''SELECT * FROM curso''')
     
@@ -319,6 +330,81 @@ def eliminarid(id,idcurso):
 
     return render_template('menu_administrador.html',cursos=cursos)
 
+@app.route('/certificado/<int:id>/<int:idcurso>', methods=['GET', 'POST'])
+def certificadoid(id,idcurso):
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor()
+
+    cursor.execute('''SELECT * FROM curso''')
+    cursos=cursor.fetchall()
+
+    cursor.execute(''' SELECT t.nombre,t.apellido,t.id_trabajador,c.nombre,c.ponente
+                   FROM trabajador t
+                   JOIN curso_trabajador tc on t.id_trabajador = tc.id_trabajador
+                   JOIN curso c on tc.id_curso = c.id_curso
+                   WHERE tc.status='finalizado' and c.status='finalizado' 
+                   AND tc.id_curso=%s AND t.id_trabajador=%s''',(idcurso,id))
+
+    persona=cursor.fetchall()
+    
+    for person in persona:
+
+        nombre_completo = f"{person[0]} {person[1]}"
+        
+         ### Step 3: Set canvas conditions to add text to the template
+        packet = io.BytesIO()
+        width, height = letter # letter dimension is 612 x 792, so we will double it to write anywhere in the template
+        c = canvas.Canvas(packet, pagesize=(width*2, height*2)) # Set dimensions where you can add text to PDF template
+                                                            # double dimension to write anywhere in the template
+    
+        ### Step 4: Get text font types, more info at https://docs.reportlab.com/reportlab/userguide/ch3_fonts/#truetype-font-support
+        reportlab.rl_config.warnOnMissingFontGlyphs = 0
+        pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf')) # for variable 1: Student
+        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))     # for variable 2: Course
+        pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf')) # for variable 3: Date
+
+        ### Step 5: Set font features for each variable
+        # Set font features for variable 1: Student
+        c.setFillColorRGB(139/255,119/255,40/255) # Set font colour
+        c.setFont('VeraBd', 40)                   # Set font type and font size
+        c.drawCentredString(360, 330, nombre_completo)    # Set position to write text ("watermark")
+        
+
+
+        # Save all Canvas settings
+        c.save()
+
+        ### Step 6: Get final PDF certifciate
+        # Get PDF template
+        #cargar= os.path.join (basepath, 'static/archivos', nuevoNombreFile)    
+        existing_pdf = PdfReader(open("certificado.pdf", "rb"))   # Read PDF template
+        page = existing_pdf.pages[0]              # Get first (in this case, the only one) page of the template
+    
+        # Add "watermark" (new_pdf) to template (page) 
+        packet.seek(0)                            # Move to the beginning of the StringIO buffer
+        new_pdf = PdfReader(packet)               # Create a new PDF with Reportlab based on "watermark"
+        page.merge_page(new_pdf.pages[0])         # Add the "watermark" (which is the new PDF) on the existing PDF
+
+        ### Step 7: Export final PDF certificate (page)
+        file_name = person[0].replace(" ","_")
+        certificado = "app_ideapad/static/archivos/" + file_name + "_certificate.pdf"
+        outputStream = open(certificado, "wb")
+        output = PdfWriter()
+        output.add_page(page)
+        output.write(outputStream)
+        outputStream.close()
+
+
+    cursor.execute('''SELECT * FROM curso''')
+    cursos=cursor.fetchall()
+
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+    return render_template('menu_administrador.html',cursos=cursos)
+   
 
 @app.route('/visualizar')
 def visualizar():
@@ -407,13 +493,23 @@ def visualizarcurso(id):
                    JOIN curso c on tc.id_curso = c.id_curso
                    WHERE c.id_curso=%s 
                    ''',(id,))
+
     trabajadores=cursor.fetchall()
-    print(trabajadores)
+
+    cursor.execute('''SELECT status FROM curso WHERE id_curso=%s''',(id,))
+    verificar=cursor.fetchone()
+    print(verificar)
+
+    certificados=False
+    if verificar[0] =='finalizado':
+
+        certificados=True
+      
     conectar.commit()
     cursor.close()
     conectar.close()
 
-    return render_template('visualizar_curso_admin.html',curso=curso,inscritos=inscritos[0],trabajadores=trabajadores)
+    return render_template('visualizar_curso_admin.html',curso=curso,inscritos=inscritos[0],trabajadores=trabajadores,certificados=certificados)
 
 
 @app.route('/agregar',methods=['POST'])
@@ -566,7 +662,10 @@ def eventos():
 
     return jsonify(lista_cursos)
 
+
 if __name__=='__main__':
 
     app.run(debug=True)
+
+
 
