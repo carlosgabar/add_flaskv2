@@ -1,4 +1,4 @@
-from flask import Flask,send_file
+from flask import Flask,send_file,Response
 from flask import render_template,redirect,session,request,jsonify,url_for
 from db import get_connection
 import datetime
@@ -7,6 +7,7 @@ from werkzeug.utils import secure_filename
 from datetime import datetime
 from PyPDF2 import PdfWriter, PdfReader
 from io import BytesIO
+from datetime import date
 
 from reportlab.pdfgen import canvas
 from reportlab.lib.pagesizes import letter, landscape
@@ -331,80 +332,148 @@ def eliminarid(id,idcurso):
     return render_template('menu_administrador.html',cursos=cursos)
 
 @app.route('/certificado/<int:id>/<int:idcurso>', methods=['GET', 'POST'])
-def certificadoid(id,idcurso):
-
-    conectar=conectar_bd()
-    cursor=conectar.cursor()
+def certificadoid(id, idcurso):
+    conectar = conectar_bd()
+    cursor = conectar.cursor()
 
     cursor.execute('''SELECT * FROM curso''')
-    cursos=cursor.fetchall()
+    cursos = cursor.fetchall()
 
-    cursor.execute(''' SELECT t.nombre,t.apellido,t.id_trabajador,c.nombre,c.ponente
-                   FROM trabajador t
-                   JOIN curso_trabajador tc on t.id_trabajador = tc.id_trabajador
-                   JOIN curso c on tc.id_curso = c.id_curso
-                   WHERE tc.status='finalizado' and c.status='finalizado' 
-                   AND tc.id_curso=%s AND t.id_trabajador=%s''',(idcurso,id))
+    cursor.execute(''' SELECT t.nombre, t.apellido, t.id_trabajador, c.nombre, c.ponente,c.canthoras
+                       FROM trabajador t
+                       JOIN curso_trabajador tc ON t.id_trabajador = tc.id_trabajador
+                       JOIN curso c ON tc.id_curso = c.id_curso
+                       WHERE tc.status='finalizado' AND c.status='finalizado' 
+                       AND tc.id_curso=%s AND t.id_trabajador=%s''', (idcurso, id))
 
-    persona=cursor.fetchall()
-    
+    persona = cursor.fetchall()
+
+    # Crear un objeto BytesIO para almacenar el PDF en memoria
+    packet = io.BytesIO()
+    width, height = letter
+    c = canvas.Canvas(packet, pagesize=(width * 2, height * 2))
+
+    reportlab.rl_config.warnOnMissingFontGlyphs = 0
+    pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf'))
+    pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))
+    pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf'))
+
     for person in persona:
-
+        
         nombre_completo = f"{person[0]} {person[1]}"
+        mayus=nombre_completo.title()
+        cedula=str(person[2])
+        titulo=person[3]
+        ponente=person[4].title()
+        canthoras=str(person[5])
+        hoy=str(date.today())
         
-         ### Step 3: Set canvas conditions to add text to the template
-        packet = io.BytesIO()
-        width, height = letter # letter dimension is 612 x 792, so we will double it to write anywhere in the template
-        c = canvas.Canvas(packet, pagesize=(width*2, height*2)) # Set dimensions where you can add text to PDF template
-                                                            # double dimension to write anywhere in the template
-    
-        ### Step 4: Get text font types, more info at https://docs.reportlab.com/reportlab/userguide/ch3_fonts/#truetype-font-support
-        reportlab.rl_config.warnOnMissingFontGlyphs = 0
-        pdfmetrics.registerFont(TTFont('VeraBd', 'VeraBd.ttf')) # for variable 1: Student
-        pdfmetrics.registerFont(TTFont('Vera', 'Vera.ttf'))     # for variable 2: Course
-        pdfmetrics.registerFont(TTFont('VeraBI', 'VeraBI.ttf')) # for variable 3: Date
-
-        ### Step 5: Set font features for each variable
-        # Set font features for variable 1: Student
-        c.setFillColorRGB(139/255,119/255,40/255) # Set font colour
-        c.setFont('VeraBd', 40)                   # Set font type and font size
-        c.drawCentredString(360, 330, nombre_completo)    # Set position to write text ("watermark")
-        
-
-
-        # Save all Canvas settings
-        c.save()
-
-        ### Step 6: Get final PDF certifciate
-        # Get PDF template
-        #cargar= os.path.join (basepath, 'static/archivos', nuevoNombreFile)    
-        existing_pdf = PdfReader(open("certificado.pdf", "rb"))   # Read PDF template
-        page = existing_pdf.pages[0]              # Get first (in this case, the only one) page of the template
-    
-        # Add "watermark" (new_pdf) to template (page) 
-        packet.seek(0)                            # Move to the beginning of the StringIO buffer
-        new_pdf = PdfReader(packet)               # Create a new PDF with Reportlab based on "watermark"
-        page.merge_page(new_pdf.pages[0])         # Add the "watermark" (which is the new PDF) on the existing PDF
-
-        ### Step 7: Export final PDF certificate (page)
-        file_name = person[0].replace(" ","_")
-        certificado = "app_ideapad/static/archivos/" + file_name + "_certificate.pdf"
-        outputStream = open(certificado, "wb")
-        output = PdfWriter()
-        output.add_page(page)
-        output.write(outputStream)
-        outputStream.close()
-
-
-    cursor.execute('''SELECT * FROM curso''')
-    cursos=cursor.fetchall()
-
-    conectar.commit()
-    cursor.close()
-    conectar.close()
-
-    return render_template('menu_administrador.html',cursos=cursos)
+        titulo="Normas industriales REGLAS ISO:20031 connn validez internacional paradddd ofimaticas microsoft"
    
+        partes=dividir_titulo(titulo)
+        c.setFillColorRGB(139/255,119/255,40/255) # Set font colour
+        c.setFont('VeraBd', 35)                   # Set font type and font size
+        c.drawCentredString(360, 330, mayus)    # Set position to write text ("watermark")
+
+        c.setFillColorRGB(0,0,0) # Set font colour
+        c.setFont('VeraBd', 15)                   # Set font type and font size
+        c.drawCentredString(365, 307, cedula)    # Set position to write text ("watermark")
+
+        if len(titulo) < 30:
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 220,titulo)    # Set position to write text ("watermark")
+
+        elif len(partes)<=2:
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 220,partes[0])    # Set position to write text ("watermark")
+            
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 190,partes[1])    # Set position to write text ("watermark")
+      
+
+        else:
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 220,partes[0])    # Set position to write text ("watermark")
+            
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 190,partes[1])    # Set position to write text ("watermark")
+
+            c.setFillColorRGB(139/256,119/255,40/255) # Set font colour
+            c.setFont('VeraBd', 30)                   # Set font type and font size
+            c.drawCentredString(360, 160,partes[2])    # Set position to write text ("watermark")
+
+        c.setFillColorRGB(0,0,0) # Set font colour
+        c.setFont('VeraBd', 15)                   # Set font type and font size
+        c.drawCentredString(185, 17, '8')    # Set position to write text ("watermark")
+
+        c.setFillColorRGB(0,0,0) # Set font colour
+        c.setFont('VeraBd', 15)                   # Set font type and font size
+        c.drawCentredString(185, 17, canthoras)    # Set position to write text ("watermark")
+
+        c.setFillColorRGB(0,0,0) # Set font colour
+        c.setFont('VeraBd', 15)                   # Set font type and font size
+        c.drawCentredString(550, 80, ponente)    # Set position to write text ("watermark")
+
+        c.setFillColorRGB(0,0,0) # Set font colour
+        c.setFont('VeraBd', 10)                   # Set font type and font size
+        c.drawCentredString(670, 18, hoy)    # Set position to write text ("watermark")
+
+    c.save()
+
+    # Obtener el PDF existente
+    existing_pdf = PdfReader(open("certificado.pdf", "rb"))
+    page = existing_pdf.pages[0]
+
+    packet.seek(0)
+    new_pdf = PdfReader(packet)
+    page.merge_page(new_pdf.pages[0])
+
+    # Preparar la respuesta para descargar el PDF
+    output = PdfWriter()
+    output.add_page(page)
+
+    # Crear un objeto BytesIO para el PDF final
+    pdf_output = io.BytesIO()
+    output.write(pdf_output)
+    pdf_output.seek(0)
+
+    # Configurar la respuesta para la descarga
+    return Response(pdf_output, mimetype='application/pdf', headers={
+        'Content-Disposition': f'attachment; filename="{person[0].replace(" ", "_")}_certificate.pdf"'
+    })
+
+
+def dividir_titulo(titulo, limite_caracteres=28):
+    """
+    Divide un título en dos o tres partes, buscando los primeros espacios después del límite de caracteres.
+
+    Args:
+        titulo: El título completo como una cadena de texto.
+        limite_caracteres: El número máximo de caracteres en la primera parte.
+
+    Returns:
+        Una lista con las partes del título.
+    """
+
+    partes = []
+    inicio = 0
+    while inicio < len(titulo):
+        # Encontrar el siguiente espacio o el final del título
+        fin = titulo.find(" ", inicio + limite_caracteres)
+        if fin == -1:
+            fin = len(titulo)
+
+        # Agregar la parte al resultado
+        partes.append(titulo[inicio:fin].strip())
+        inicio = fin
+
+    return partes
+
 
 @app.route('/visualizar')
 def visualizar():
