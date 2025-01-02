@@ -553,8 +553,7 @@ def visualizarpor():
 
         </tr> 
 
-         
-
+        
         '''
     
     return rows
