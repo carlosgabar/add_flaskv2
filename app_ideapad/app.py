@@ -239,6 +239,12 @@ def crear():
         cursor.execute('''INSERT INTO curso (id_curso, nombre, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras)
                 VALUES (nextval('curso_id_curso_seq'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',
                 (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras))
+        
+        conectar.commit()
+
+        cursor.execute('''INSERT INTO h_curso(id_curso,cant_horas,fecha_inicio,fecha_fin) VALUES(nextval('sec_h_curso'),%s,%s,%s)''',
+                       (canthoras,fechayhora,fechafin))
+
     else:
 
         mensaje=True
@@ -261,15 +267,15 @@ def editar():
 
     id = request.form['idformacion']
     opcion=request.form['status']
-    nombre=request.form['nombrecurso']
-    nombreponente=request.form['nombreponente']
-    fechainicio=request.form['fechainicio']
-    fechafin=request.form['fechafin']
-    minparticipantes=request.form['minparticipantes']
-    maxparticipantes=request.form['maxparticipantes']
+    nombre=request.form['nombrecursoo']
+    nombreponente=request.form['nombreponentee']
+    fechainicio=request.form['fechainicioo']
+    fechafin=request.form['fechafinn']
+    minparticipantes=request.form['minparticipantess']
+    maxparticipantes=request.form['maxparticipantess']
     parrafo=request.form['descripcion']
-    localidad=request.form['localidad']
-    salon=request.form['salon']
+    localidad=request.form['localidadd']
+    salon=request.form['salonn']
     tiempo=request.form['horainicio']
     canthoras=request.form['canthoras']
 
@@ -284,6 +290,15 @@ def editar():
         cursor.execute('''UPDATE curso SET nombre=%s,ponente=%s,fecha_inicio=%s,fecha_fin=%s
                 ,minimo=%s,maximo=%s ,descripcion=%s,localidad=%s,salon=%s,status=%s,canthoras=%s WHERE id_curso=%s ''', (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,
                                                                                                    localidad,salon,opcion,canthoras,id))
+        
+        cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_Curso=%s''',(id,))
+        horas=cursor.fetchone()
+        horast=horas[0]
+        print(horast)
+        print(canthoras)
+        totalhoras=int(canthoras)+int(horast)
+
+        cursor.execute('''UPDATE h_curso SET cant_horas=%s,fecha_inicio=%s,fecha_fin=%s WHERE id_curso=%s''',(totalhoras,fechayhora,fechafin,id))
 
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
@@ -535,7 +550,12 @@ def visualizarpor():
                   <button type="submit">Visualizar</button>
                 </form>
         </td>
-        </tr> '''
+
+        </tr> 
+
+         
+
+        '''
     
     return rows
 

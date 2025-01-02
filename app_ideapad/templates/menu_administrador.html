@@ -104,17 +104,6 @@
 
     </div>
 
-    
-
-    <div class="ajustar">
-
-    <label for="localidad">Localidad del curso</label>
-    <input type="text" id="localidad" name="localidad" required>
-
-    <label for="salon">Salon/Edificio</label>
-    <input type="text" id="salon" name="salon"  required>
-
-    </div>
 
     <div class="tiempo">
 
@@ -169,11 +158,6 @@
             <button onclick="openModal('{{id}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
           </td>
         </tr>
-
-        <script> console.log('ID:', '{{ id }}'); 
-          console.log('Inicio:', '{{ inicio }}'); console.log('Fin:', '{{ fin }}'); console.log('Min:', '{{ min }}'); console.log('Max:', '{{ max }}');  console.log('Localidad:', '{{ localidad|escape }}'); console.log('Salon:', '{{ salon|escape }}');
-       </script>
-
 
         {% endfor %}
       </tbody>
@@ -438,6 +422,7 @@
           <th>Maximo de Participantes</th> 
           <th>Acción</th>
           <th>Editar</th> 
+         
         </tr> </thead> 
         <tbody id="course-list"> {% for id, tema, ponente, inicio, fin, min, max, 
           descripcion, localidad, salon, estado,horas,minutos in listado %} 

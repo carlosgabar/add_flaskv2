@@ -1,4 +1,29 @@
 SELECT * FROM curso_trabajador
+SELECT * FROM curso
+SELECT * FROM trabajador
+SELECT * FROM h_curso
+
+CANTIDAD DE HORAS DE CURSOS POR DEPARTAMENTO
+
+SELECT t.departamento, SUM(c.canthoras)
+FROM trabajador t
+JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
+JOIN curso c on tc.id_curso=c.id_curso
+WHERE tc.status='finalizado' and c.status='finalizado' 
+GROUP BY t.departamento
+
+
+SELECT nextval('curso_id_curso_seq');
+SELECT nextval('sec_h_curso');
+
+
+INSERT INTO h_curso (id_curso,cant_horas,fecha_inicio,fecha_fin) 
+VALUES (17,8,'2024-11-30','2024-12-15')
+
+
+SELECT * FROM h_curso
+
+
 
 UPDATE curso SET nombre='deportes' WHERE id_curso=8
 
@@ -15,7 +40,6 @@ SELECT c.nombre AS Curso, t.descripcion AS tarea
 FROM curso c
 INNER JOIN tarea t ON c.id_curso = t.id_curso
 
-
 SELECT * FROM curso WHERE status='activo'
 SELECT * FROM curso
 SELECT * FROM trabajador
@@ -28,14 +52,16 @@ INSERT INTO tarea(id_curso,descripcion) VALUES (10,'merendar')
 INSERT INTO tarea(id_curso,descripcion) VALUES (10,'cenar')
 
 
+
 SELECT COUNT(*) FROM curso_trabajador tc
 JOIN trabajador t on tc.id_trabajador=t.id_trabajador
 JOIN curso c on tc.id_curso=c.id_curso
 WHERE tc.status='finalizado'
 
 nextval('curso_id_curso_seq'::regclass)
-
-create sequence sec_idtarea
+nextval('sec_h_curso'::regclass)
+ALTER SEQUENCE sec_h_curso RESTART WITH 31;
+create sequence sec_h_curso
 start with 1
 increment by 1
 
@@ -48,6 +74,8 @@ SELECT t.id_trabajador, t.nombre,t.apellido
 SELECT t.descripcion FROM tarea t
 JOIN curso c on t.id_curso = c.id_curso
 WHERE c.id_curso=3
+
+SELECT nextval('curso_id_curso_seq');
 
 
 SELECT nombre,fecha_inicio,fecha_fin FROM curso WHERE status='activo'
