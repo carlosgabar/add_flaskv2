@@ -9,8 +9,14 @@ SELECT t.departamento, SUM(c.canthoras)
 FROM trabajador t
 JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
 JOIN curso c on tc.id_curso=c.id_curso
-WHERE tc.status='finalizado' and c.status='finalizado' 
+WHERE tc.status='finalizado' and c.status='finalizado'
+AND c.fecha_inicio>='2024-11-05' AND c.fecha_fin<='2024-11-30' 
 GROUP BY t.departamento
+
+SELECT id_curso FROM curso WHERE fecha_inicio='2024-11-29'
+
+SELECT COUNT(*) FROM curso c
+WHERE c.status='activo'
 
 
 SELECT nextval('curso_id_curso_seq');

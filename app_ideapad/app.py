@@ -35,6 +35,15 @@ def inicio():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
+
     if not 'login' in session:
         return redirect("/login_admin")
 
@@ -46,7 +55,7 @@ def inicio():
     cursor.close()
     conectar.close()
 
-    return render_template('menu_administrador.html',cursos=cursos)
+    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 @app.route('/login_trabajador')
 def login():
@@ -145,6 +154,16 @@ def menuadmin():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
+
+
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
     print(cursos)
@@ -153,7 +172,7 @@ def menuadmin():
     conectar.close()
 
 
-    return render_template('menu_administrador.html',cursos=cursos)
+    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 
 @app.route('/login_admin',methods=['POST'])
@@ -198,6 +217,15 @@ def crear():
     global id
     conectar=conectar_bd()
     cursor=conectar.cursor()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
 
     nombre=request.form['nombrecurso']
     nombreponente=request.form['nombreponente']
@@ -257,13 +285,22 @@ def crear():
     cursor.close()
     conectar.close()
 
-    return render_template('menu_administrador.html',cursos=cursos,mensaje=mensaje)
+    return render_template('menu_administrador.html',cursos=cursos,mensaje=mensaje,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 @app.route('/editar',methods=['POST'])
 def editar():
 
     conectar=conectar_bd()
     cursor=conectar.cursor()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
 
     id = request.form['idformacion']
     opcion=request.form['status']
@@ -307,13 +344,22 @@ def editar():
     cursor.close()
     conectar.close()
 
-    return render_template('menu_administrador.html',cursos=cursos)
+    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editarid(id):
   
     conectar=conectar_bd()
     cursor=conectar.cursor()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
 
     cursor.execute('''SELECT * FROM  curso WHERE id_curso=%s ''' ,(id,))
     detalle=cursor.fetchone()
@@ -327,7 +373,7 @@ def editarid(id):
     cursor.close()
     conectar.close()
 
-    return render_template('menu_administrador.html',datos=detalle,cursos=cursos)
+    return render_template('menu_administrador.html',datos=detalle,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 @app.route('/eliminar/<int:id>/<int:idcurso>', methods=['GET', 'POST'])
 def eliminarid(id,idcurso):
@@ -337,6 +383,15 @@ def eliminarid(id,idcurso):
 
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
 
     cursor.execute('''DELETE FROM curso_trabajador WHERE id_curso=%s and id_trabajador=%s''',(idcurso,id))
 
@@ -662,6 +717,61 @@ def agregartrabajador():
     conectar.close()
 
     return render_template('menu_administrador.html',cursos=cursos)
+
+@app.route('/estadisticas',methods=['POST'])
+def estadisticas():
+
+    desde=request.form['desde']
+    hasta=request.form['hasta']
+    mostrar=request.form['stat']
+
+    print(desde)
+    print(hasta)
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor() 
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    finalizados=cursor.fetchone()
+
+
+    print(activos)
+
+
+    cursor.execute('''SELECT t.departamento, SUM(c.canthoras) FROM trabajador t
+                   JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
+                   JOIN curso c on tc.id_curso=c.id_curso
+                   WHERE tc.status='finalizado' and c.status='finalizado'
+                   AND c.fecha_inicio>=%s AND c.fecha_fin<=%s 
+                   GROUP BY t.departamento''' ,(desde,hasta))
+    valores=cursor.fetchall()
+
+    
+    print(valores)
+    columnas=[]
+    numeros=[]
+    for i,j in valores:
+        columnas.append(i)
+        numeros.append(j)
+
+
+    print(columnas)
+    print(numeros)
+
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+
+
+    return render_template('estadisticas.html',columnas=columnas,numeros=numeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+
 
 @app.route('/cal')
 def cal():

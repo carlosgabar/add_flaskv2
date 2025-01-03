@@ -40,7 +40,7 @@
       <li ><a href="#">Visualizar </a>
         <ul>
           <li><a href="#" onclick="mostrarFormulario('visualizar')">Visualizar </a></li>
-          <li><a href="/#" >Estadisticas</a> <!-- ESTADISTICAS POR TRABAJADOR, VISTAS POR ADMINISTRADOR  -->
+          <li><a href="/#" onclick="mostrarFormulario('estadisticas')" >Estadisticas</a> <!-- ESTADISTICAS POR TRABAJADOR, VISTAS POR ADMINISTRADOR  -->
           <li><a href="/cal" >Calendario</a>
         </ul>
       </li>
@@ -527,6 +527,65 @@
     </script>
 
 </div>  
+
+<div id="estadisticas" class="formularios">
+
+  <h2>Estadísticas</h2>
+
+  <div class="bloquecuadros">
+
+    <div class="bloqueactivo">
+
+        <h4>Activos</h4>
+        <h1>{{activos}}</h1>
+       
+
+    </div>
+
+    <div class="bloqueprogreso">
+
+        <h4>En espera</h4>
+        <h1>{{progreso}}</h1>
+        
+    </div>
+
+    <div class="bloquefinalizado">
+
+        <h4>Finalizados</h4>
+        <h1>{{finalizados}}</h1>
+      
+
+    </div>
+
+    <div class="bloquetotal">
+
+        <h4>Total</h4>
+        <h1></h1>
+
+    </div>
+
+    </div>
+
+  <form id="estadisticas" action="/estadisticas" method="post">
+
+  <label for="desde">Desde</label> 
+  <input type="date" id="desde" name="desde" required>
+
+  <label for="hasta">Hasta</label> 
+  <input type="date" id="hasta" name="hasta" required >
+
+  <button class="boton" type="submit">Visualizar</button>
+
+  <h3>Participantes asistentes por cursos</h3>
+  <input type="radio" id="stat1" name="stat" value="stat1" required>
+
+  <h3>Participantes asistentes por cursos</h3>
+  <input type="radio" id="stat2" name="stat" value="stat2">
+
+  </form>
+
+</div>
+
 
 </div>
 

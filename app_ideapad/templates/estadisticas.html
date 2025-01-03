@@ -1,0 +1,58 @@
+{% extends 'barra_nav_admin.html'  %}
+
+    {% block content %}
+
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+     
+        <script src='/static/chart.js'></script>
+    </head>
+    <body>
+        <canvas id="myChart" width="900" height="300"></canvas>
+    </body>
+   
+    <script>
+        var ctx= document.getElementById("myChart").getContext("2d");
+        var myChart= new Chart(ctx,{
+            type:"bar",
+            data:{
+                
+                labels: [
+                {% for columna in columnas %}
+                    '{{ columna }}',
+                {% endfor %}
+            ],
+                datasets:[{
+                        label:'Cantidad de horas de curso por departamento',
+                        data:[{% for numero in numeros %}
+
+                            '{{numero}}',
+                            {% endfor %}
+                        ],
+                        backgroundColor:[
+                            'rgb(66, 134, 244,0.5)',
+                            'rgb(74, 135, 72,0.5)',
+                            'rgb(229, 89, 50,0.5)'
+                        ]
+                }]
+            },
+            options:{
+                scales:{
+                    yAxes:[{
+                            ticks:{
+                                beginAtZero:true
+                            }
+                    }]
+                }
+            }
+        });
+
+    </script>
+ 
+</html>
+
+{% endblock %}
