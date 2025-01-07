@@ -315,3 +315,28 @@ body {
 }
 
 .tiempo input#canthoras { width: 10% }
+
+
+.separarstats{
+
+  display: block;
+  margin-top: 10px;
+
+}
+
+.separarstats {
+  display: flex;
+  flex-direction: column;
+}
+
+.separarstats div {
+  margin-bottom: 10px;
+  border: 1px solid #ccc; 
+  padding: 10px;
+}
+
+.formstat{
+
+  text-align: center;
+
+}

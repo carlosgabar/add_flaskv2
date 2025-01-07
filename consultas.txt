@@ -2,17 +2,90 @@ SELECT * FROM curso_trabajador
 SELECT * FROM curso
 SELECT * FROM trabajador
 SELECT * FROM h_curso
+SELECT * FROM v_curso
+19822 3,8
+200005 1,3
 
-CANTIDAD DE HORAS DE CURSOS POR DEPARTAMENTO
+c 44
+v 8
+ 
+DELETE FROM h_curso 
 
-SELECT t.departamento, SUM(c.canthoras)
+SELECT t.nombre, t.apellido, t.id_trabajador, c.nombre, v.ponente,v.canthoras
+                   FROM trabajador t
+                   JOIN curso_trabajador tc ON t.id_trabajador = tc.id_trabajador
+                   JOIN v_curso v ON tc.id_curso = v.id_vcurso
+				   JOIN curso c ON v.id_curso_original=c.id_curso
+                   WHERE tc.status='finalizado' AND v.status='finalizado' 
+                   AND tc.id_curso=1 AND t.id_trabajador=200005
+
+
+
+
+SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
+WHERE v.status='activo' AND v.fecha_inicio>='2025-01-5' AND v.fecha_fin<='2025-01-30'
+
+SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original  WHERE v.id_curso_original=3
+
+SELECT c.nombre,v.fecha_inicio,v.fecha_fin FROM curso c
+JOIN v_curso v on c.id_curso=v.id_curso_original
+WHERE v.status='activo'
+
+
+SELECT *
+FROM curso c
+JOIN v_curso v on c.id_curso=v.id_curso_original
+
+ALTER TABLE curso_trabajador
+ADD CONSTRAINT unique_curso_trabajador UNIQUE (id_curso, id_trabajador);
+
+HORAS DE FORMACION POR GERENCIA ------------------LISTO
+
+SELECT t.departamento, SUM(v.canthoras)
 FROM trabajador t
 JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
-JOIN curso c on tc.id_curso=c.id_curso
-WHERE tc.status='finalizado' and c.status='finalizado'
-AND c.fecha_inicio>='2024-11-05' AND c.fecha_fin<='2024-11-30' 
+JOIN v_curso v on tc.id_curso=v.id_vcurso
+WHERE tc.status='finalizado' and v.status='finalizado'
+AND v.fecha_inicio>='2025-01-05' AND v.fecha_fin<='2025-11-30' 
 GROUP BY t.departamento
 
+HORAS DE FORMACION POR CURSOS
+
+SELECT c.nombre, hc.cant_horas
+FROM curso c
+JOIN h_curso hc on c.id_curso=hc.id_curso
+JOIN v_curso v on c.id_curso=v.id_curso_original   
+WHERE v.status='finalizado'
+AND v.fecha_inicio>='2024-11-05' AND v.fecha_fin<='2024-11-30' 
+
+PARTICIPANTES ASISTENTES POR CURSOS -----------------LISTO
+
+SELECT c.nombre, COUNT(tc.id_trabajador)
+FROM curso c
+JOIN v_curso v on c.id_curso=v.id_curso_original   
+JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
+JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+WHERE v.status='finalizado' and tc.status='finalizado'
+AND v.fecha_inicio>='2025-01-05' AND v.fecha_fin<='2025-11-30'
+GROUP by c.nombre
+
+SELECT * FROM curso_trabajador
+SELECT * FROM curso
+SELECT * FROM trabajador   c44 c3        3=Trabajo en equipo 44=quimicosconph   v3 v1
+SELECT * FROM h_curso                    v3=19822      v1=200005   20005=luis 1922=steven
+SELECT * FROM v_curso
+
+PARTICIPANTES ASISTENTES POR GERENCIA ---------- LISTO
+
+SELECT t.departamento, COUNT(tc.id_trabajador)
+FROM trabajador t
+JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
+JOIN v_curso v on tc.id_curso=v.id_vcurso
+AND v.fecha_inicio>='2025-01-05' AND v.fecha_fin<='2025-11-30' 
+GROUP by t.departamento
+
+
+SELECT 
 SELECT id_curso FROM curso WHERE fecha_inicio='2024-11-29'
 
 SELECT COUNT(*) FROM curso c
@@ -25,6 +98,8 @@ SELECT nextval('sec_h_curso');
 
 INSERT INTO h_curso (id_curso,cant_horas,fecha_inicio,fecha_fin) 
 VALUES (17,8,'2024-11-30','2024-12-15')
+
+INSERT INTO v_curso (id_curso_original) VALUES (3)
 
 
 SELECT * FROM h_curso
@@ -49,13 +124,15 @@ INNER JOIN tarea t ON c.id_curso = t.id_curso
 SELECT * FROM curso WHERE status='activo'
 SELECT * FROM curso
 SELECT * FROM trabajador
-INSERT INTO curso_trabajador (id_curso,id_trabajador) VALUES (3,19823)
+INSERT INTO curso_trabajador (id_curso,id_trabajador) VALUES (8,19822)
 UPDATE trabajador SET clave='12345' WHERE id_trabajador=200005
 UPDATE curso_trabajador SET status='finalizado' WHERE id_curso=3 and id_trabajador=200005
 SELECT * FROM tarea
 
 INSERT INTO tarea(id_curso,descripcion) VALUES (10,'merendar')
 INSERT INTO tarea(id_curso,descripcion) VALUES (10,'cenar')
+
+INSERT INTO curso(id_curso) VALUES (3)
 
 
 
@@ -66,8 +143,12 @@ WHERE tc.status='finalizado'
 
 nextval('curso_id_curso_seq'::regclass)
 nextval('sec_h_curso'::regclass)
+nextval('sec_vcurso'::regclass)
+nextval('sec_curso_trabajador'::regclass)
 ALTER SEQUENCE sec_h_curso RESTART WITH 31;
-create sequence sec_h_curso
+
+
+create sequence sec_vcurso
 start with 1
 increment by 1
 

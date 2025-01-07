@@ -35,21 +35,25 @@ def inicio():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
     if not 'login' in session:
         return redirect("/login_admin")
 
-    cursor.execute('''SELECT * FROM curso''')
-    
+    cursor.execute('''SELECT *
+    FROM curso c
+    JOIN v_curso v on c.id_curso=v.id_curso_original
+                             ''')
+        
     cursos=cursor.fetchall()
+
     print(cursos)
     conectar.commit()
     cursor.close()
@@ -154,15 +158,14 @@ def menuadmin():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
-
 
     cursor.execute('''SELECT * FROM curso''')
     cursos=cursor.fetchall()
@@ -218,13 +221,13 @@ def crear():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
     nombre=request.form['nombrecurso']
@@ -264,20 +267,31 @@ def crear():
     
     if fecha2 >= fecha1:
 
-        cursor.execute('''INSERT INTO curso (id_curso, nombre, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras)
-                VALUES (nextval('curso_id_curso_seq'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',
-                (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras))
+        cursor.execute('''INSERT INTO curso (id_curso, nombre)
+                VALUES (nextval('curso_id_curso_seq'),%s)''',
+                (nombre,))
         
         conectar.commit()
+        
+        cursor.execute('''SELECT id_curso FROM curso WHERE nombre=%s''',(nombre,))
+        id_curso=cursor.fetchone()[0]
+        print(id_curso)
+        
+        cursor.execute('''INSERT INTO h_curso(id_curso,cant_horas) VALUES(%s,%s)''',
+                       (id_curso,canthoras))
 
-        cursor.execute('''INSERT INTO h_curso(id_curso,cant_horas,fecha_inicio,fecha_fin) VALUES(nextval('sec_h_curso'),%s,%s,%s)''',
-                       (canthoras,fechayhora,fechafin))
-
+        cursor.execute('''INSERT INTO v_curso (id_vcurso, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras,id_curso_original)
+                VALUES (nextval('sec_vcurso'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                (nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras,id_curso))
+        
     else:
 
         mensaje=True
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT *
+    FROM curso c
+    JOIN v_curso v on c.id_curso=v.id_curso_original
+                             ''')
     cursos=cursor.fetchall()
     print(cursos)
 
@@ -293,13 +307,13 @@ def editar():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
     id = request.form['idformacion']
@@ -315,6 +329,7 @@ def editar():
     salon=request.form['salonn']
     tiempo=request.form['horainicio']
     canthoras=request.form['canthoras']
+    print("aqui",canthoras)
 
     hora1=datetime.strptime(tiempo,'%H:%M').time()
     fecha1=datetime.strptime(fechainicio,'%Y-%m-%d')
@@ -324,20 +339,24 @@ def editar():
 
     if fecha2 >= fecha1:
 
-        cursor.execute('''UPDATE curso SET nombre=%s,ponente=%s,fecha_inicio=%s,fecha_fin=%s
-                ,minimo=%s,maximo=%s ,descripcion=%s,localidad=%s,salon=%s,status=%s,canthoras=%s WHERE id_curso=%s ''', (nombre,nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,
-                                                                                                   localidad,salon,opcion,canthoras,id))
+        cursor.execute('''UPDATE v_curso SET fecha_inicio=%s,fecha_fin=%s,minimo=%s,maximo=%s,descripcion=%s,status=%s,hora=%s,canthoras=%s,
+                       ponente=%s,localidad=%s,salon=%s WHERE id_curso_original=%s''',(fechainicio,fechafin,minparticipantes,maxparticipantes,parrafo,opcion,tiempo,canthoras,
+                        nombreponente,localidad,salon,id))
         
-        cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_Curso=%s''',(id,))
+        #EDITAR UN CURSO, POR LO CUAL LAS HORAS NO SE SUMAN, SE ACTUALIZA
+        #HAY QUE CREAR UN MODULO DONDE SE PERMITA CREAR UNA NUEVA VERSION DEL CURSO Y AHI SI SE AUMENTA LA CANTIDAD DE HORAS
+        cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_curso=%s''',(id,))
         horas=cursor.fetchone()
         horast=horas[0]
         print(horast)
         print(canthoras)
         totalhoras=int(canthoras)+int(horast)
 
-        cursor.execute('''UPDATE h_curso SET cant_horas=%s,fecha_inicio=%s,fecha_fin=%s WHERE id_curso=%s''',(totalhoras,fechayhora,fechafin,id))
+        cursor.execute('''UPDATE h_curso SET cant_horas=%s WHERE id_curso=%s''',(totalhoras,id))
+            
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
+    ''')
     cursos=cursor.fetchall()
     print(cursos)
     conectar.commit()
@@ -352,21 +371,23 @@ def editarid(id):
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
-    cursor.execute('''SELECT * FROM  curso WHERE id_curso=%s ''' ,(id,))
+    cursor.execute('''SELECT * FROM curso c JOIN v_curso v on c.id_curso=v.id_curso_original  WHERE v.id_curso_original=%s
+ ''' ,(id,))
     detalle=cursor.fetchone()
     
     print(detalle[2])
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT * FROM curso c JOIN v_curso v on c.id_curso=v.id_curso_original''')
     cursos=cursor.fetchall()
 
     conectar.commit()
@@ -381,17 +402,11 @@ def eliminarid(id,idcurso):
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT *
+    FROM curso c
+    JOIN v_curso v on c.id_curso=v.id_curso_original
+                             ''')
     cursos=cursor.fetchall()
-
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
-    activos=cursor.fetchone()
-
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
-    progreso=cursor.fetchone()
-
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
-    finalizados=cursor.fetchone()
 
     cursor.execute('''DELETE FROM curso_trabajador WHERE id_curso=%s and id_trabajador=%s''',(idcurso,id))
 
@@ -406,15 +421,19 @@ def certificadoid(id, idcurso):
     conectar = conectar_bd()
     cursor = conectar.cursor()
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT *
+    FROM curso c
+    JOIN v_curso v on c.id_curso=v.id_curso_original
+                             ''')
     cursos = cursor.fetchall()
 
-    cursor.execute(''' SELECT t.nombre, t.apellido, t.id_trabajador, c.nombre, c.ponente,c.canthoras
-                       FROM trabajador t
-                       JOIN curso_trabajador tc ON t.id_trabajador = tc.id_trabajador
-                       JOIN curso c ON tc.id_curso = c.id_curso
-                       WHERE tc.status='finalizado' AND c.status='finalizado' 
-                       AND tc.id_curso=%s AND t.id_trabajador=%s''', (idcurso, id))
+    cursor.execute(''' SELECT t.nombre, t.apellido, t.id_trabajador, c.nombre, v.ponente,v.canthoras
+                   FROM trabajador t
+                   JOIN curso_trabajador tc ON t.id_trabajador = tc.id_trabajador
+                   JOIN v_curso v ON tc.id_curso = v.id_vcurso
+				   JOIN curso c ON v.id_curso_original=c.id_curso
+                   WHERE tc.status='finalizado' AND v.status='finalizado' 
+                   AND tc.id_curso=%s AND t.id_trabajador=%s''', (idcurso, id))
 
     persona = cursor.fetchall()
 
@@ -551,13 +570,13 @@ def visualizar():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute('''SELECT * FROM curso WHERE status='finalizado' ''')
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchall()
 
-    cursor.execute('''SELECT * FROM curso WHERE status='progreso' ''')
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original WHERE v.status='progreso' ''')
     progreso=cursor.fetchall()
 
-    cursor.execute('''SELECT * FROM curso WHERE status='activo' ''')
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original WHERE v.status='activo' ''')
     activos=cursor.fetchall()
   
     print(activos)
@@ -578,13 +597,16 @@ def visualizarpor():
     opcion=request.form['status_']
     desde=request.form['desde_']
     hasta=request.form['hasta_']
+    print(desde)
+    print(hasta)
     print(opcion)
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute('''SELECT * FROM curso WHERE status=%s AND fecha_inicio>=%s AND fecha_inicio<=%s ''',(opcion,desde,hasta))
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
+                   WHERE v.status=%s AND v.fecha_inicio>=%s AND v.fecha_fin<=%s ''',(opcion,desde,hasta))
     cursos=cursor.fetchall()
-    
+    print(cursos)
     conectar.commit()
     cursor.close()
     conectar.close()
@@ -592,14 +614,14 @@ def visualizarpor():
     rows = '' 
     for curso in cursos: 
         rows += f''' <tr> 
-        <td>{curso[0]}</td> 
-        <td>{curso[1]}</td> 
         <td>{curso[2]}</td> 
+        <td>{curso[1]}</td> 
+        <td>{curso[12]}</td> 
         <td>{curso[3]}</td> 
         <td>{curso[4]}</td> 
         <td>{curso[5]}</td> 
         <td>{curso[6]}</td> 
-        <td>{curso[10]}</td>
+        <td>{curso[8]}</td>
         <td>
                 <form action="{url_for('visualizarcurso', id=curso[0])}" method="get" style="display:inline;">
                   <button type="submit">Visualizar</button>
@@ -618,28 +640,29 @@ def visualizarpor():
 def visualizarcurso(id):
 
     conectar=conectar_bd()
-    cursor=conectar.cursor()    
+    cursor=conectar.cursor()
 
-    cursor.execute('''SELECT * FROM curso WHERE id_curso=%s ''',(id,))
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original  WHERE v.id_curso_original=%s ''',(id,))
     curso=cursor.fetchall()
+    print(curso)
 
     cursor.execute('''SELECT COUNT(tc.id_trabajador) 
                    FROM curso_trabajador tc 
-                   JOIN curso c ON tc.id_curso = c.id_curso
-                   WHERE c.id_curso=%s 
+                   JOIN v_curso v ON tc.id_curso = v.id_curso_original
+                   WHERE v.id_curso_original=%s 
                    ''',(id,))
     inscritos=cursor.fetchone()
 
     cursor.execute('''SELECT t.id_trabajador, t.nombre,t.apellido 
                    FROM trabajador t
                    JOIN curso_trabajador tc on t.id_trabajador = tc.id_trabajador
-                   JOIN curso c on tc.id_curso = c.id_curso
-                   WHERE c.id_curso=%s 
+                   JOIN v_curso v on tc.id_curso = v.id_curso_original
+                   WHERE v.id_curso_original=%s 
                    ''',(id,))
 
     trabajadores=cursor.fetchall()
 
-    cursor.execute('''SELECT status FROM curso WHERE id_curso=%s''',(id,))
+    cursor.execute('''SELECT status FROM v_curso WHERE id_curso_original=%s''',(id,))
     verificar=cursor.fetchone()
     print(verificar)
 
@@ -664,7 +687,8 @@ def agregar():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute(''' SELECT * FROM curso WHERE status=%s ''',(opcion,))
+    cursor.execute(''' SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
+                   WHERE v.status=%s ''',(opcion,))
     cursos=cursor.fetchall()
 
     conectar.commit()
@@ -674,14 +698,14 @@ def agregar():
     rows = '' 
     for curso in cursos: 
         rows += f''' <tr> 
-        <td>{curso[0]}</td> 
-        <td>{curso[1]}</td> 
         <td>{curso[2]}</td> 
+        <td>{curso[1]}</td> 
+        <td>{curso[12]}</td> 
         <td>{curso[3]}</td> 
         <td>{curso[4]}</td> 
         <td>{curso[5]}</td> 
         <td>{curso[6]}</td> 
-        <td>{curso[10]}</td>
+        <td>{curso[8]}</td>
         </tr> '''
     
     print(rows)
@@ -701,15 +725,15 @@ def agregartrabajador():
     cursor.execute('''SELECT COUNT(*) FROM trabajador WHERE id_trabajador=%s ''',(id_trabajador,))
     existe=cursor.fetchone()
 
-    cursor.execute('''SELECT COUNT(*) FROM curso WHERE id_curso=%s ''',(id_curso,))
+    cursor.execute('''SELECT COUNT(*) FROM v_curso v WHERE v.id_vcurso=%s ''',(id_curso,))
     existecurso=cursor.fetchone()
 
-    cursor.execute('''SELECT * FROM curso''')
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
     cursos=cursor.fetchall()
 
     if existe[0]>0 and existecurso[0]>0:
 
-        cursor.execute('''INSERT INTO curso_trabajador (id_curso,id_trabajador) VALUES (%s,%s)''',(id_curso,id_trabajador))
+        cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(id_curso,id_trabajador))
 
         
     conectar.commit()
@@ -725,8 +749,7 @@ def estadisticas():
     hasta=request.form['hasta']
     mostrar=request.form['stat']
 
-    print(desde)
-    print(hasta)
+    print(mostrar)
 
     conectar=conectar_bd()
     cursor=conectar.cursor() 
@@ -741,19 +764,70 @@ def estadisticas():
     finalizados=cursor.fetchone()
 
 
-    print(activos)
+    #HORAS DE FORMACION POR GERENCIA
+    if mostrar=='stat3':
+
+        cursor.execute('''SELECT t.departamento, SUM(v.canthoras)
+        FROM trabajador t
+        JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
+        JOIN v_curso v on tc.id_curso=v.id_vcurso
+        WHERE tc.status='finalizado' and v.status='finalizado'
+        AND v.fecha_inicio>=%s AND v.fecha_fin<=%s
+        GROUP BY t.departamento''' ,(desde,hasta))
+        valores=cursor.fetchall()
+
+        titulo="Horas de Formacion por Gerencia"
+
+    elif mostrar=='stat2':
+
+         #HORAS DE FORMACION POR CURSOS
+
+        cursor.execute('''SELECT c.nombre,hc.cant_horas
+                       FROM curso c
+                       JOIN h_curso hc on c.id_curso=hc.id_curso
+                       WHERE c.status='finalizado' 
+                       AND c.fecha_inicio>=%s AND c.fecha_fin<=%s ''',(desde,hasta))
+        
+        valores=cursor.fetchall()
+
+        titulo="Horas de Formacion por Cursos"
+
+    elif mostrar=='stat1':
+
+        #PARTICIPANTES ASISTENTES POR CURSOS
+
+        cursor.execute('''SELECT c.nombre, COUNT(tc.id_trabajador)
+            FROM curso c
+            JOIN v_curso v on c.id_curso=v.id_curso_original   
+            JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
+            JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+            WHERE v.status='finalizado' and tc.status='finalizado'
+            AND v.fecha_inicio>=%s AND v.fecha_fin<=%s
+            GROUP by c.nombre''',(desde,hasta))
+
+        valores=cursor.fetchall()
+
+        titulo="Participantes Asistentes por Cursos"
+        
+
+    elif mostrar=='stat4':
+
+         #PARTICIPANTES ASISTENTES POR GERENCIA
+
+        cursor.execute('''
+    SELECT t.departamento, COUNT(tc.id_trabajador)
+    FROM trabajador t
+    JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
+    JOIN v_curso v on tc.id_curso=v.id_vcurso
+    AND v.fecha_inicio>=%s AND v.fecha_fin<=%s 
+    GROUP by t.departamento
+''',(desde,hasta))
+
+        valores=cursor.fetchall()
+
+        titulo="Participantes Asistentes por Cursos"
 
 
-    cursor.execute('''SELECT t.departamento, SUM(c.canthoras) FROM trabajador t
-                   JOIN curso_trabajador tc on t.id_trabajador=tc.id_trabajador
-                   JOIN curso c on tc.id_curso=c.id_curso
-                   WHERE tc.status='finalizado' and c.status='finalizado'
-                   AND c.fecha_inicio>=%s AND c.fecha_fin<=%s 
-                   GROUP BY t.departamento''' ,(desde,hasta))
-    valores=cursor.fetchall()
-
-    
-    print(valores)
     columnas=[]
     numeros=[]
     for i,j in valores:
@@ -770,7 +844,7 @@ def estadisticas():
 
 
 
-    return render_template('estadisticas.html',columnas=columnas,numeros=numeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('estadisticas.html',columnas=columnas,numeros=numeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],titulo=titulo)
 
 
 @app.route('/cal')
@@ -779,7 +853,10 @@ def cal():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute('''SELECT nombre,fecha_inicio,fecha_fin FROM curso WHERE status='activo' ''')
+    cursor.execute('''SELECT c.nombre,v.fecha_inicio,v.fecha_fin FROM curso c
+        JOIN v_curso v on c.id_curso=v.id_curso_original
+        WHERE v.status='activo'
+    ''')
     cursos=cursor.fetchall()
 
     conectar.commit()
@@ -835,10 +912,9 @@ def eventos():
     conectar=conectar_bd()
     cursor=conectar.cursor()
 
-    cursor.execute('''SELECT c.nombre,c.fecha_inicio
-                   FROM curso c
-                   WHERE c.status='activo' 
-                   GROUP BY c.nombre,c.fecha_inicio''')
+    cursor.execute('''SELECT c.nombre,v.fecha_inicio FROM curso c
+        JOIN v_curso v on c.id_curso=v.id_curso_original
+        WHERE v.status='activo' ''')
     
     infocurso=cursor.fetchall()
     print(infocurso)
@@ -851,7 +927,6 @@ def eventos():
         'start': start_date.isoformat()
     })
         
-
     conectar.commit()
     cursor.close()
     conectar.close()

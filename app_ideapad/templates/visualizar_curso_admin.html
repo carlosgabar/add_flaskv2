@@ -4,8 +4,7 @@
     <div class="todo">
 
     <div class="titulos">
-    {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado,hora,canthoras in curso %} 
+    {%  for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
 
     <h1>{{tema}}</h1>
     <h3>Ponente: {{ponente}}</h3>
@@ -22,8 +21,7 @@
 
     <div class="contenidoinformativo">
 
-    {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado,hora,canthoras in curso %} 
+    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
         <p class="Minimo">Minimo de participantes: {{min}}</p>
         <p class="Maximo">Maximo de participantes: {{max}}</p>
         <p class="Fecha_inicio">Fecha de Inicio: {{inicio}}</p>
@@ -43,8 +41,7 @@
 
     <div class="descripcion">
 
-    {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado,horas,canthoras in curso  %}
+    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
     <p>{{descripcion}}</p>
 
     {% endfor %}
@@ -74,8 +71,7 @@
                     {% endif %}
 
                 </tr>
-                <tbody>    {% for id, tema, ponente, inicio, fin, min, max, 
-                    descripcion, localidad, salon, estado,hora,canthoras in curso  %}
+                <tbody>    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
                     {%for id_trabajador,nombre,apellido in trabajadores %}
 
                     <td>
@@ -97,7 +93,7 @@
 
                         <form action="{{ url_for('certificadoid', id=id_trabajador,idcurso=id) }}" method="get" style="display:inline;">
                             <button type="submit">Generar</button>
-                          </form>
+                        </form>
 
                     </td>
 

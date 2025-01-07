@@ -145,9 +145,9 @@
         </tr>
       </thead>
       <tbody>
-        {% for id,tema,ponente,inicio,fin,min,max,descripcion,localidad,salon,estado,horas,canthoras in cursos %}
+        {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in cursos %}
         <tr>
-          <td>{{id}}</td>
+          <td>{{idversion}}</td>
           <td>{{tema}}</td>
           <td>{{ponente}}</td>
           <td>{{inicio}}</td>
@@ -155,7 +155,7 @@
           <td>{{min}}</td>
           <td>{{max}}</td>
           <td>
-            <button onclick="openModal('{{id}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
+            <button onclick="openModal('{{idversion}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
           </td>
         </tr>
 
@@ -178,7 +178,7 @@
             <option value="progreso">En Progreso</option>
           </select>
           <label for="idformacion">ID</label>
-          <input type="number" id="idformacion" name="idformacion" min="0">
+          <input type="number" id="idformacion" name="idformacion" readonly min="0">
         </div>
         
         <label for="nombrecurso">Titulo del curso</label>
@@ -216,7 +216,7 @@
         <input type="time" id="horainicio" name="horainicio"  required>
     
         <label for="Hora">Cantidad de Horas</label>
-        <input type="number" id="canthoras" name="canthoras"  required>
+        <input type="number" id="canthoras" name="canthoras" required>
   
         </div>
 
@@ -424,17 +424,17 @@
           <th>Editar</th> 
          
         </tr> </thead> 
-        <tbody id="course-list"> {% for id, tema, ponente, inicio, fin, min, max, 
-          descripcion, localidad, salon, estado,horas,minutos in listado %} 
+        <tbody id="course-list"> {% for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+          idoriginal,ponente,localidad,salon in listado %} 
           <tr> 
-            <td>{{ id }}</td> 
-            <td>{{ tema }}</td> 
+            <td>{{ idversion }}</td> 
+            <td>{{ tema}}</td> 
             <td>{{ ponente }}</td> 
             <td>{{ inicio }}</td> 
             <td>{{ fin }}</td> 
             <td>{{ min }}</td> 
             <td>{{ max }}</td> 
-            <td>{{ estado }}</td>
+            <td>{{ status }}</td>
           </tr> {% endfor %} 
         </tbody> 
       </table> 
@@ -496,10 +496,10 @@
         <th>Maximo de Participantes</th> 
         <th>Acción</th>
       </tr> </thead> 
-      <tbody id="course-listt"> {% for id, tema, ponente, inicio, fin, min, max, 
-        descripcion, localidad, salon, estado in listado %} 
+      <tbody id="course-listt"> {% for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+        idoriginal,ponente,localidad,salon in listado %} 
         <tr> 
-          <td>{{ id }}</td> 
+          <td>{{ idversion }}</td> 
           <td>{{ tema }}</td> 
           <td>{{ ponente }}</td> 
           <td>{{ inicio }}</td> 
@@ -568,6 +568,8 @@
 
   <form id="estadisticas" action="/estadisticas" method="post">
 
+   <div class="formstat">
+
   <label for="desde">Desde</label> 
   <input type="date" id="desde" name="desde" required>
 
@@ -576,11 +578,31 @@
 
   <button class="boton" type="submit">Visualizar</button>
 
-  <h3>Participantes asistentes por cursos</h3>
-  <input type="radio" id="stat1" name="stat" value="stat1" required>
+  </div>
 
-  <h3>Participantes asistentes por cursos</h3>
-  <input type="radio" id="stat2" name="stat" value="stat2">
+  <div class="separarstats">
+
+  <div>
+  <p1>Participantes asistentes por cursos</p1>
+  <input type="radio" id="stat1" name="stat" value="stat1" required style="float: right;" >
+  </div>
+
+  <div>
+  <p1>Horas de formacion por cursos</p1>
+  <input type="radio" id="stat2" name="stat" value="stat2" style="float: right;" >
+  </div>
+
+  <div>
+  <p1>Horas de formacion por Gerencia</p1>
+  <input type="radio" id="stat3" name="stat" value="stat3" style="float: right;" >
+  </div>
+
+  <div>
+  <p1>Participantes asistentes por Gerencia</p1>
+  <input type="radio" id="stat4" name="stat" value="stat4" style="float: right;" >
+  </div>
+
+  </div>
 
   </form>
 

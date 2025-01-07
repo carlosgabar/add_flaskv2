@@ -21,11 +21,11 @@
           </tr>
       </thead>
       <tbody>
-        {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-          localidad,salon,status,horas,canthoras in finalizados %}
+        {%  for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+          idoriginal,ponente,localidad,salon in finalizados %}
           <tr>
-            <td>{{id_curso}}</td>
-            <td>{{nombre}}</td>
+            <td>{{idversion}}</td>
+            <td>{{tema}}</td>
             <td>{{ponente}}</td>
             <td>{{fecha_inicio}}</td>
             <td>{{fecha_fin}}</td>
@@ -56,11 +56,11 @@
           </tr>
       </thead>
       <tbody>
-        {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-          localidad,salon,status,horas,canthoras in progreso %}
+        {%  for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+          idoriginal,ponente,localidad,salon in progreso %}
           <tr>
-            <td>{{id_curso}}</td>
-            <td>{{nombre}}</td>
+            <td>{{idversion}}</td>
+            <td>{{tema}}</td>
             <td>{{ponente}}</td>
             <td>{{fecha_inicio}}</td>
             <td>{{fecha_fin}}</td>
@@ -91,11 +91,11 @@
         </tr>
     </thead>
     <tbody>
-      {%  for id_curso,nombre,ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,
-        localidad,salon,status,horas,canthoras in activos %}
+      {%  for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+        idoriginal,ponente,localidad,salon in activos %}
         <tr>
-          <td>{{id_curso}}</td>
-          <td>{{nombre}}</td>
+          <td>{{idversion}}</td>
+          <td>{{tema}}</td>
           <td>{{ponente}}</td>
           <td>{{fecha_inicio}}</td>
           <td>{{fecha_fin}}</td>
