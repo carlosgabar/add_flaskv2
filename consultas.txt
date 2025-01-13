@@ -6,6 +6,13 @@ SELECT * FROM v_curso
 19822 3,8
 200005 1,3
 
+INSERT INTO h_curso (id_curso_original,cant_horas,id_vcurso) 
+VALUES (44,2,3)
+
+SELECT *
+    FROM curso c
+    JOIN v_curso v on c.id_curso=v.id_curso_original
+
 c 44
 v 8
  
@@ -18,8 +25,6 @@ SELECT t.nombre, t.apellido, t.id_trabajador, c.nombre, v.ponente,v.canthoras
 				   JOIN curso c ON v.id_curso_original=c.id_curso
                    WHERE tc.status='finalizado' AND v.status='finalizado' 
                    AND tc.id_curso=1 AND t.id_trabajador=200005
-
-
 
 
 SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
@@ -49,16 +54,28 @@ WHERE tc.status='finalizado' and v.status='finalizado'
 AND v.fecha_inicio>='2025-01-05' AND v.fecha_fin<='2025-11-30' 
 GROUP BY t.departamento
 
-HORAS DE FORMACION POR CURSOS
+HORAS DE FORMACION POR CURSOS ------LISTO
 
-SELECT c.nombre, hc.cant_horas
-FROM curso c
-JOIN h_curso hc on c.id_curso=hc.id_curso
-JOIN v_curso v on c.id_curso=v.id_curso_original   
-WHERE v.status='finalizado'
-AND v.fecha_inicio>='2024-11-05' AND v.fecha_fin<='2024-11-30' 
+SELECT c.nombre, SUM(hc.cant_horas) AS total_horas
+FROM h_curso hc
+JOIN curso c ON hc.id_curso_original = c.id_curso
+JOIN (
+    SELECT id_curso_original
+    FROM v_curso
+    WHERE status = 'finalizado'
+    AND fecha_inicio >= '2025-01-05' 
+    AND fecha_fin <= '2025-11-30'
+    GROUP BY id_curso_original
+) AS v ON c.id_curso = v.id_curso_original
+GROUP BY c.nombre
 
 PARTICIPANTES ASISTENTES POR CURSOS -----------------LISTO
+
+SELECT * FROM curso_trabajador
+SELECT * FROM curso
+SELECT * FROM trabajador
+SELECT * FROM h_curso
+SELECT * FROM v_curso
 
 SELECT c.nombre, COUNT(tc.id_trabajador)
 FROM curso c

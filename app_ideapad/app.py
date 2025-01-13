@@ -277,12 +277,18 @@ def crear():
         id_curso=cursor.fetchone()[0]
         print(id_curso)
         
-        cursor.execute('''INSERT INTO h_curso(id_curso,cant_horas) VALUES(%s,%s)''',
-                       (id_curso,canthoras))
-
         cursor.execute('''INSERT INTO v_curso (id_vcurso, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras,id_curso_original)
-                VALUES (nextval('sec_vcurso'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)''',
+                VALUES (nextval('sec_vcurso'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)
+                       RETURNING id_vcurso''',
                 (nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras,id_curso))
+        
+        
+        id_vcurso = cursor.fetchone()[0]
+        conectar.commit()
+
+        cursor.execute('''INSERT INTO h_curso(id_curso_original,cant_horas,id_vcurso) VALUES(%s,%s,%s)''',
+                       (id_curso,canthoras,id_vcurso))
+
         
     else:
 
@@ -340,19 +346,19 @@ def editar():
     if fecha2 >= fecha1:
 
         cursor.execute('''UPDATE v_curso SET fecha_inicio=%s,fecha_fin=%s,minimo=%s,maximo=%s,descripcion=%s,status=%s,hora=%s,canthoras=%s,
-                       ponente=%s,localidad=%s,salon=%s WHERE id_curso_original=%s''',(fechainicio,fechafin,minparticipantes,maxparticipantes,parrafo,opcion,tiempo,canthoras,
+                       ponente=%s,localidad=%s,salon=%s WHERE id_vcurso=%s''',(fechainicio,fechafin,minparticipantes,maxparticipantes,parrafo,opcion,tiempo,canthoras,
                         nombreponente,localidad,salon,id))
         
         #EDITAR UN CURSO, POR LO CUAL LAS HORAS NO SE SUMAN, SE ACTUALIZA
         #HAY QUE CREAR UN MODULO DONDE SE PERMITA CREAR UNA NUEVA VERSION DEL CURSO Y AHI SI SE AUMENTA LA CANTIDAD DE HORAS
-        cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_curso=%s''',(id,))
-        horas=cursor.fetchone()
-        horast=horas[0]
-        print(horast)
-        print(canthoras)
-        totalhoras=int(canthoras)+int(horast)
+        #cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_curso=%s''',(id,))
+        #horas=cursor.fetchone()
+        #horast=horas[0]
+        #print(horast)
+       # print(canthoras)
+        #totalhoras=int(canthoras)+int(horast)
 
-        cursor.execute('''UPDATE h_curso SET cant_horas=%s WHERE id_curso=%s''',(totalhoras,id))
+        cursor.execute('''UPDATE h_curso SET cant_horas=%s WHERE id_vcurso=%s''',(canthoras,id))
             
 
     cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
@@ -365,12 +371,83 @@ def editar():
 
     return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
+@app.route('/crearversion',methods=['POST'])
+def crearversion():
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor()
+
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
+    activos=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
+    progreso=cursor.fetchone()
+
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
+    finalizados=cursor.fetchone()
+
+    id = request.form['idformacion__']
+    print("AQUI ID: ",id)
+    opcion=request.form['status']
+    nombre=request.form['nombrecursoo']
+    print(nombre)
+    nombreponente=request.form['nombreponentee']
+    fechainicio=request.form['fechainicioo']
+    fechafin=request.form['fechafinn']
+    minparticipantes=request.form['minparticipantess']
+    maxparticipantes=request.form['maxparticipantess']
+    parrafo=request.form['descripcion']
+    localidad=request.form['localidadd']
+    salon=request.form['salonn']
+    tiempo=request.form['horainicio']
+    canthoras=request.form['canthoras']
+    print("aqui",canthoras)
+
+    hora1=datetime.strptime(tiempo,'%H:%M').time()
+    fecha1=datetime.strptime(fechainicio,'%Y-%m-%d')
+    fecha2=datetime.strptime(fechafin,'%Y-%m-%d')
+
+    fechayhora=datetime.combine(fecha1,hora1)
+
+    if fecha2 >= fecha1:
+
+
+        cursor.execute('''INSERT INTO v_curso (id_vcurso, ponente,fecha_inicio,fecha_fin,minimo,maximo,descripcion,localidad,salon,hora,canthoras,id_curso_original)
+                VALUES (nextval('sec_vcurso'),%s, %s, %s,%s,%s,%s,%s,%s,%s,%s,%s)
+                       RETURNING id_vcurso''',
+                (nombreponente,fechayhora,fechafin,minparticipantes,maxparticipantes,parrafo,localidad,salon,tiempo,canthoras,id))
+        
+        #cursor.execute('''SELECT cant_horas FROM h_curso WHERE id_curso=%s''',(id,))
+        #horas=cursor.fetchone()
+        #horast=horas[0]
+        #print(horast)
+       # print(canthoras)
+        #totalhoras=int(canthoras)+int(horast)
+
+        id_vcurso = cursor.fetchone()[0]
+        print(id_vcurso)
+        conectar.commit()
+
+        cursor.execute('''INSERT INTO h_curso(id_curso_original,cant_horas,id_vcurso) VALUES(%s,%s,%s)''',
+                       (id,canthoras,id_vcurso))
+            
+
+    cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
+    ''')
+    cursos=cursor.fetchall()
+    print(cursos)
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+
+   
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
 def editarid(id):
   
     conectar=conectar_bd()
     cursor=conectar.cursor()
-
 
     cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
@@ -782,11 +859,19 @@ def estadisticas():
 
          #HORAS DE FORMACION POR CURSOS
 
-        cursor.execute('''SELECT c.nombre,hc.cant_horas
-                       FROM curso c
-                       JOIN h_curso hc on c.id_curso=hc.id_curso
-                       WHERE c.status='finalizado' 
-                       AND c.fecha_inicio>=%s AND c.fecha_fin<=%s ''',(desde,hasta))
+        cursor.execute('''SELECT c.nombre, SUM(hc.cant_horas) AS total_horas
+                    FROM h_curso hc
+                    JOIN curso c ON hc.id_curso_original = c.id_curso
+                    JOIN (
+                    SELECT id_curso_original
+                    FROM v_curso
+                    WHERE status = 'finalizado'
+                    AND fecha_inicio >= %s
+                    AND fecha_fin <= %s
+                        GROUP BY id_curso_original
+                    ) AS v ON c.id_curso = v.id_curso_original
+                    GROUP BY c.nombre
+                    ''',(desde,hasta))
         
         valores=cursor.fetchall()
 
@@ -834,14 +919,12 @@ def estadisticas():
         columnas.append(i)
         numeros.append(j)
 
-
     print(columnas)
     print(numeros)
 
     conectar.commit()
     cursor.close()
     conectar.close()
-
 
 
     return render_template('estadisticas.html',columnas=columnas,numeros=numeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],titulo=titulo)

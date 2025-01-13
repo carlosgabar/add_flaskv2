@@ -142,6 +142,7 @@
           <th>Minimo de Participantes</th>
           <th>Maximo de participantes</th>
           <th>Accion</th>
+          <th>Crear</th>
         </tr>
       </thead>
       <tbody>
@@ -155,7 +156,11 @@
           <td>{{min}}</td>
           <td>{{max}}</td>
           <td>
-            <button onclick="openModal('{{idversion}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}', '{{salon|escape}}')">Editar</button>
+            <button onclick="openModal('{{idversion}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}',
+             '{{salon|escape}}','{{horas}}' , '{{canthoras}}')">Editar</button>
+          </td>
+          <td>
+            <button onclick="openModals('{{id}}','{{tema}}')">Version</button>
           </td>
         </tr>
 
@@ -182,13 +187,13 @@
         </div>
         
         <label for="nombrecurso">Titulo del curso</label>
-        <input type="text" id="nombrecursoo" name="nombrecursoo">
+        <input type="text" id="nombrecursoo" name="nombrecursoo" readonly>
 
         <label for="nombreponente">Ponente del curso</label>
         <input type="text" id="nombreponentee" name="nombreponentee"  >
         <div class="form-groupp">
         <label for="fecha_inicio">Inicio</label>
-        <input type="date" id="fechainicioo" name="fechainicioo" required>
+        <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
 
         <label for="fecha_fin">Fin</label>
         <input type="date" id="fechafinn" name="fechafinn" required>
@@ -213,10 +218,10 @@
         <div class="form-groupppp">
 
         <label for="Hora">Hora de Inicio</label>
-        <input type="time" id="horainicio" name="horainicio"  required>
+        <input type="time" id="horainicioo" name="horainicioo"  required>
     
         <label for="Hora">Cantidad de Horas</label>
-        <input type="number" id="canthoras" name="canthoras" required>
+        <input type="number" id="canthorass" name="canthorass" required>
   
         </div>
 
@@ -230,10 +235,80 @@
       </form>
     </div>
   </div>
+
+    <!-- Modal de NUEVA VERSION DE UN CURSO ORIGINAL-->
+    <div id="modals" style="display:none;"> 
+      <div class="modal-content">
+        <span class="close" onclick="closeModal_()">&times;</span>
+        <form id="versionform" action="/crearversion" method="post">
+          
+          <div class="form-group">
+            <label for="estatus">Status</label>
+            <select id="status" name="status">
+              <option value="activo">Activo</option>
+              <option value="finalizado">Finalizado</option>
+              <option value="progreso">En Progreso</option>
+            </select>
+            <label for="idformacion">ID Original</label>
+            <input type="number" id="idformacion__" name="idformacion__"  readonly min="0">
+
+          </div>
+          
+          <label for="nombrecurso">Titulo del curso</label>
+          <input type="text" id="nombrecursoo__" name="nombrecursoo__" readonly>
+  
+          <label for="nombreponente">Ponente del curso</label>
+          <input type="text" id="nombreponentee" name="nombreponentee"  >
+          <div class="form-groupp">
+          <label for="fecha_inicio">Inicio</label>
+          <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
+  
+          <label for="fecha_fin">Fin</label>
+          <input type="date" id="fechafinn" name="fechafinn" required>
+  
+          </div>
+          <div class="form-grouppp">
+  
+          <label for="minparticipantes">Minimo de participantes</label>
+          <input type="number" id="minparticipantess" name="minparticipantess" min=0 required>
+  
+          <label for="maxparticipantes">Maximo de Participantes</label>
+          <input type="number" id="maxparticipantess" name="maxparticipantess" min=0 required>
+  
+        </div>
+         
+          <label for="localidad">Localidad</label>
+          <input type="text" id="localidadd" name="localidadd" required>
+  
+          <label for="salon">Salon/Edificio</label>
+          <input type="text" id="salonn" name="salonn" required>
+  
+          <div class="form-groupppp">
+  
+          <label for="Hora">Hora de Inicio</label>
+          <input type="time" id="horainicio" name="horainicio"  required>
+      
+          <label for="Hora">Cantidad de Horas</label>
+          <input type="number" id="canthoras" name="canthoras" required>
+    
+          </div>
+  
+          <label for="descripcion">Descripcion del Curso</label>
+          <textarea name="descripcion" id="descripcion" cols="70" rows="8"></textarea>
+  
+          <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
+          <input class="documento" type="file" id="documento" name="documento">
+  
+          <div class="editar"><button class="boton" type="submit">Editar</button></div>
+        </form>
+      </div>
+    </div>
+
+
 </div>
 
 <script>
-  function openModal(id, tema, ponente, inicio, fin, min, max, descripcion, localidad, salon) {
+  function openModal(id, tema, ponente, inicio, fin, min, max, descripcion, localidad, salon,horas,canthoras) {
 
     console.log("Mostrando modal con los siguientes datos:", {
     id: id,
@@ -262,6 +337,8 @@
     console.log("Descripción:", descripcion);
     console.log("Localidad:", localidad);
     console.log("Salón:", salon);
+    console.log("Horas:", horas);
+    console.log("CantHoras:", canthoras);
 
     document.getElementById('idformacion').value = id;
     document.getElementById('nombrecursoo').value = tema;
@@ -273,6 +350,8 @@
     document.getElementById('descripcion').value = descripcion;
     document.getElementById('localidadd').value = localidad;
     document.getElementById('salonn').value = salon;
+    document.getElementById('horainicioo').value = horas;
+    document.getElementById('canthorass').value = canthoras;
 
     document.getElementById('modal').style.display = 'block';
   }
@@ -281,6 +360,23 @@
     document.getElementById('modal').style.display = 'none';
   }
 </script>
+
+
+<script>
+  function openModals(id,tema) {
+
+    console.log("ID:", id);
+
+    document.getElementById('idformacion__').value = id;
+    document.getElementById('nombrecursoo__').value = tema;
+    document.getElementById('modals').style.display = 'block';
+  }
+
+  function closeModal_() {
+    document.getElementById('modals').style.display = 'none';
+  }
+</script>
+
 
 <style>
 
@@ -385,6 +481,77 @@
   border-radius: 5px;
   cursor: pointer;
 }
+
+/* Estilos para el modal DE CREAR VERSION */
+#modals {
+  display: none; /* Oculto por defecto */
+  position: fixed; /* Fijo en la pantalla */
+  z-index: 1000; /* Asegura que se muestre sobre otros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Ancho completo */
+  height: 100%; /* Alto completo */
+  overflow-y: scroll;
+
+  background-color: rgb(0, 0, 0); /* Color de fondo negro */
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo negro con opacidad */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* Centrado vertical */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Ancho del modal */
+  max-width: 600px; /* Ancho máximo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Input Styles */
+#modals input[type="text"],
+#modals input[type="number"],
+#modals input[type="date"],
+#modals textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modals select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modals button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+
 </style>
 
 
