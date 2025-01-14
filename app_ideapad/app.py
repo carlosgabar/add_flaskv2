@@ -21,7 +21,7 @@ import io
 app=Flask(__name__,template_folder='templates', static_folder='static')
 app.secret_key="curso"
 
-
+idtrabajador=0
 id=0
 
 def conectar_bd():
@@ -80,6 +80,8 @@ def login_trabajador():
     if cursor.fetchone() is not None:
         session["login"]=True
         session["usuario"]="Trabajador"
+        session["id"]=id
+        
         return redirect(url_for("menutrabajador",id=id))
 
     conectar.commit()
@@ -112,24 +114,27 @@ def menutrabajador(id):
                    WHERE tc.status='espera' and tc.id_trabajador=%s ''',(id,))
     espera=cursor.fetchone()
 
-    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
-                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+    cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
+				   JOIN v_curso v on c.id_curso=v.id_curso_original 
+                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
                    JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE c.status='activo' and tc.status='activo' and t.id_trabajador=%s ''',(id,))
+                   WHERE v.status='activo' and tc.status='activo' and t.id_trabajador=%s ''',(id,))
     
     cursosactivos=cursor.fetchall()
 
-    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
-                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+    cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
+				   JOIN v_curso v on c.id_curso=v.id_curso_original 
+                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
                    JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE c.status='progreso' and tc.status='progreso' and t.id_trabajador=%s ''',(id,))
+                   WHERE v.status='progreso' and tc.status='progreso' and t.id_trabajador=%s ''',(id,))
     
     cursosprogreso=cursor.fetchall()
 
-    cursor.execute('''SELECT c.nombre,c.ponente,c.descripcion FROM curso c 
-                   JOIN curso_trabajador tc on c.id_curso=tc.id_curso
+    cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
+				   JOIN v_curso v on c.id_curso=v.id_curso_original 
+                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
                    JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE c.status='finalizado' and tc.status='finalizado' and t.id_trabajador=%s ''',(id,))
+                   WHERE v.status='finalizado' and tc.status='finalizado' and t.id_trabajador=%s ''',(id,))
     
     cursosfinalizados=cursor.fetchall()
 
@@ -140,7 +145,30 @@ def menutrabajador(id):
     conectar.close()
 
     return render_template('menu_trabajador.html',activos=activos[0],espera=espera[0],finalizados=finalizados[0],
-                           cursosactivos=cursosactivos,cursosprogreso=cursosprogreso,cursosfinalizados=cursosfinalizados)
+                           cursosactivos=cursosactivos,cursosprogreso=cursosprogreso,cursosfinalizados=cursosfinalizados,id=id)
+
+@app.route('/inscribirse_trabajador', methods=['GET', 'POST'])
+def incribirsetrabajador():
+
+    id = session.get('id')
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor()
+
+    cursor.execute('''SELECT *
+        FROM curso c
+        JOIN v_curso v on c.id_curso=v.id_curso_original
+        WHERE v.status='progreso' ''')
+    
+    cursos=cursor.fetchall()
+
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+
+    return render_template('inscribirse_trabajador.html',id=id,cursos=cursos)
+
 
 @app.route('/login_admin')
 def loginadmin():
@@ -662,8 +690,8 @@ def visualizar():
     cursor.close()
     conectar.close()
 
-    #AQUI PARA LISTAR CURSOS POR: CURSOS ACTIVO(LA GENTE PUEDE INSCRIBIRSE)
-    #CURSOS EN ESPERA(CURSO SOLO EDITABLE POR ADMINISTRADOR)
+    #AQUI PARA LISTAR CURSOS POR: CURSOS ACTIVO(EL CURSO EMPEZO)
+    #CURSOS EN ESPERA(CURSO SOLO EDITABLE POR ADMINISTRADOR, EN ESPERA, LA GENTE PUEDE INSCRIBIRSE)
     #CURSOS FINALIZADOS(CURSOS QUE YA TERMINO SU FECHA)
 
     return render_template('visualizar_admin.html',finalizados=finalizados,progreso=progreso,activos=activos)
@@ -831,13 +859,13 @@ def estadisticas():
     conectar=conectar_bd()
     cursor=conectar.cursor() 
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='activo' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='activo' ''')
     activos=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='progreso' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='progreso' ''')
     progreso=cursor.fetchone()
 
-    cursor.execute(''' SELECT COUNT(*) FROM curso c WHERE c.status='finalizado' ''')
+    cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
 

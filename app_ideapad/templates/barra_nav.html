@@ -32,11 +32,14 @@
     <nav class="navbar navbar-expand navbar-light" style="background-color: #e3f2fd;">
         <div class="container-fluid">
             <ul class="nav navbar-nav me-auto"> <!-- "me-auto" empuja el logo a la derecha -->
+              {% if id %} 
                 <li class="nav-item">
-                    <a class="nav-link" href="/menu_admin">Mis Cursos</a>
+                  
+                  <a class="nav-link" href="{{url_for('menutrabajador', id=id)}}">Mis Cursos</a>
                 </li>
+              {% endif %}
                 <li class="nav-item">
-                    <a class="nav-link" href="/visualizar">Inscripcion</a>
+                    <a class="nav-link" href="/inscribirse_trabajador">Inscripcion</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="/cerrar_trabajador">Cerrar Sesion</a>

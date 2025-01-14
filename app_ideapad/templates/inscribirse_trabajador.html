@@ -1,0 +1,71 @@
+{% extends 'barra_nav.html'  %}
+
+{% block content %}
+
+<div class="general">
+
+<h2 id="titulo">Cursos Disponibles</h2>
+
+  <div class="accordion activos" id="accordionactivosi"> 
+    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in cursos %} 
+    <div class="accordion-item"> 
+        <h2 class="accordion-header" id="headingactivos{{ loop.index }}"> 
+            <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
+            type="button" data-bs-toggle="collapse" 
+            data-bs-target="#collapseactivos{{ loop.index }}" 
+            aria-expanded="{{ 'true' if loop.first else 'false' }}" 
+            aria-controls="collapseactivos{{ loop.index }}"> {{ tema }} 
+
+            <span class="badge bg-primary"> 
+              {{ inicio.strftime("%d/%m/%Y") }} 
+             
+            </span>
+
+            <span class="badge bg-secondary"> 
+              {{ fin.strftime("%d/%m/%Y") }} 
+           
+            </span>
+
+            <span class="badge bg-light text-dark "> 
+              <button class="btn btn-sm btn-outline-secondary" onclick="openModals('{{id}}','{{tema}}')">Versión</button>
+            </span>
+            
+        </button> </h2> 
+        <div id="collapseactivos{{ loop.index }}" 
+        class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
+        data-bs-parent="#accordionactivos"> 
+        <div class="accordion-body"> <strong>{{ ponente.upper() }}</strong> {{ descripcion }} </div> 
+    </div> 
+</div>
+ {% endfor %}
+</div>
+
+</div>
+
+<div id="modals" style="display:none;"> 
+  <div class="modal-content">
+    <span class="close" onclick="closeModal_()">&times;</span>
+    <form id="versionform" action="/crearversion" method="post">
+      
+      <div class="editar"><button class="boton" type="submit">Editar</button></div>
+    </form>
+  </div>
+</div>
+
+<script>
+  function openModals(id,tema) {
+
+    console.log("ID:", id);
+
+    document.getElementById('idformacion__').value = id;
+    document.getElementById('nombrecursoo__').value = tema;
+    document.getElementById('modals').style.display = 'block';
+  }
+
+  function closeModal_() {
+    document.getElementById('modals').style.display = 'none';
+  }
+</script>
+
+
+{% endblock %}
