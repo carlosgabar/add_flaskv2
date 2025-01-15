@@ -44,7 +44,7 @@ def inicio():
     cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
     finalizados=cursor.fetchone()
 
-    if not 'login' in session:
+    if not 'login' in session or session.get('usuario')!='Administrador':
         return redirect("/login_admin")
 
     cursor.execute('''SELECT *
@@ -92,6 +92,8 @@ def login_trabajador():
 
 @app.route('/trabajador/<int:id>', methods=['GET', 'POST'])
 def menutrabajador(id):
+
+    #PARA GUIARME if 'login' not in session or session.get("usuario") != "Trabajador" or session.get("id") != str(id)
 
     conectar=conectar_bd()
     cursor=conectar.cursor()
@@ -151,6 +153,7 @@ def menutrabajador(id):
 def incribirsetrabajador():
 
     id = session.get('id')
+    print(id)
 
     conectar=conectar_bd()
     cursor=conectar.cursor()
@@ -168,6 +171,33 @@ def incribirsetrabajador():
 
 
     return render_template('inscribirse_trabajador.html',id=id,cursos=cursos)
+
+@app.route('/elecciontrabajador',methods=['POST'])
+def elecciontrabajador():
+
+    id = session.get('id')
+    print(id)
+
+    curso_id=request.form['curso_id']
+
+    conectar=conectar_bd()
+    cursor=conectar.cursor()
+
+    cursor.execute('''SELECT *
+        FROM curso c
+        JOIN v_curso v on c.id_curso=v.id_curso_original
+        WHERE v.status='progreso' ''')
+    
+    cursos=cursor.fetchall()
+
+    cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(curso_id,id))
+
+
+    conectar.commit()
+    cursor.close()
+    conectar.close()
+
+    return redirect(url_for("menutrabajador",id=id))
 
 
 @app.route('/login_admin')
@@ -204,7 +234,6 @@ def menuadmin():
 
 
     return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
-
 
 @app.route('/login_admin',methods=['POST'])
 def admin():

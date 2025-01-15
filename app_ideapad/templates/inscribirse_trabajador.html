@@ -3,69 +3,263 @@
 {% block content %}
 
 <div class="general">
-
-<h2 id="titulo">Cursos Disponibles</h2>
-
+  <h2 id="titulo">Cursos Disponibles</h2>
   <div class="accordion activos" id="accordionactivosi"> 
-    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in cursos %} 
-    <div class="accordion-item"> 
-        <h2 class="accordion-header" id="headingactivos{{ loop.index }}"> 
-            <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
-            type="button" data-bs-toggle="collapse" 
-            data-bs-target="#collapseactivos{{ loop.index }}" 
-            aria-expanded="{{ 'true' if loop.first else 'false' }}" 
-            aria-controls="collapseactivos{{ loop.index }}"> {{ tema }} 
+      {% for id, tema, idversion, inicio, fin, min, max, descripcion, estado, horas, canthoras, idoriginal, ponente, localidad, salon in cursos %} 
+      <div class="accordion-item"> 
+          <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingactivos{{ loop.index }}"> 
+              <button class="accordion-button {{ 'collapsed' if not loop.first }}" 
+                  type="button" data-bs-toggle="collapse" 
+                  data-bs-target="#collapseactivos{{ loop.index }}" 
+                  aria-expanded="{{ 'true' if loop.first else 'false' }}" 
+                  aria-controls="collapseactivos{{ loop.index }}"> 
+                  
+                  {{ tema }} 
 
-            <span class="badge bg-primary"> 
-              {{ inicio.strftime("%d/%m/%Y") }} 
-             
-            </span>
+                  <span class="badge bg-primary me-2"> 
+                    {{ inicio.strftime("%d/%m/%Y") }} 
+                  </span>
 
-            <span class="badge bg-secondary"> 
-              {{ fin.strftime("%d/%m/%Y") }} 
+                  <span class="badge bg-secondary"> 
+                    {{ fin.strftime("%d/%m/%Y") }} 
+                  </span>
+
+                <button class="btn btn-sm btn-outline-secondary" onclick="openModals('{{idversion}}','{{ponente}}','{{tema}}','{{inicio}}','{{fin}}')">Ingresar</button>
            
-            </span>
+              </button>
 
-            <span class="badge bg-light text-dark "> 
-              <button class="btn btn-sm btn-outline-secondary" onclick="openModals('{{id}}','{{tema}}')">Versión</button>
-            </span>
-            
-        </button> </h2> 
-        <div id="collapseactivos{{ loop.index }}" 
-        class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
-        data-bs-parent="#accordionactivos"> 
-        <div class="accordion-body"> <strong>{{ ponente.upper() }}</strong> {{ descripcion }} </div> 
-    </div> 
-</div>
- {% endfor %}
-</div>
-
+          </h2> 
+          <div id="collapseactivos{{ loop.index }}" 
+               class="accordion-collapse collapse {{ 'show' if loop.first }}" 
+               aria-labelledby="headingactivos{{ loop.index }}" 
+               data-bs-parent="#accordionactivos"> 
+              <div class="accordion-body"> 
+                  <strong>{{ ponente.upper() }}</strong> {{ descripcion }} 
+              </div> 
+          </div> 
+      </div>
+      {% endfor %}
+  </div>
 </div>
 
 <div id="modals" style="display:none;"> 
   <div class="modal-content">
     <span class="close" onclick="closeModal_()">&times;</span>
-    <form id="versionform" action="/crearversion" method="post">
+    <form id="versionform" action="/elecciontrabajador" method="post">
+
+      <input type="hidden" id="curso_id" name="curso_id">
+      <input type="hidden" id="curso_tema" name="curso_tema">
+      <input type="hidden" id="curso_ponente" name="curso_ponente">
+      <input type="hidden" id="curso_inicio" name="curso_inicio">
+      <input type="hidden" id="curso_fin" name="curso_fin">
+
+      <p id="curso-info">Se inscribirá en el curso: <strong></strong></p>
+      <p id="ponente">Ponente: <strong></strong></p>
+      <p id="fechas">Inicio: <strong></strong> Fin <strong></strong> </p>
       
-      <div class="editar"><button class="boton" type="submit">Editar</button></div>
+      <div class="confirmar"><button class="boton" type="submit">Confirmar</button></div>
     </form>
   </div>
 </div>
 
 <script>
-  function openModals(id,tema) {
+  function openModals(id,ponente,tema,inicio,fin) {
 
     console.log("ID:", id);
-
-    document.getElementById('idformacion__').value = id;
-    document.getElementById('nombrecursoo__').value = tema;
+    document.getElementById('curso-info').innerHTML = `Se inscribirá en el curso: <strong>${tema}</strong>`;
+    document.getElementById('ponente').innerHTML = `Ponente: <strong>${ponente}</strong>`;
+    document.getElementById('fechas').innerHTML = `Inicio: <strong>${inicio}</strong>  <strong>${fin}</strong>`;
     document.getElementById('modals').style.display = 'block';
+
+
+    document.getElementById('curso_id').value = id;
+    document.getElementById('curso_tema').value = tema;
+    document.getElementById('curso_ponente').value = ponente;
+    document.getElementById('curso_inicio').value = inicio;
+    document.getElementById('curso_fin').value = fin;
+
+
   }
 
   function closeModal_() {
     document.getElementById('modals').style.display = 'none';
   }
 </script>
+
+<style>
+
+.confirmar{
+
+  text-align: center;
+}
+
+.form-group {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+.form-groupp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+.form-grouppp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+.form-groupppp {
+  display: flex;
+  align-items: center;
+  gap: 2%; /* Adjust the gap as needed */
+}
+
+
+
+  /* Estilos para el modal */
+  #modal {
+    display: none; /* Oculto por defecto */
+    position: fixed; /* Fijo en la pantalla */
+    z-index: 1000; /* Asegura que se muestre sobre otros elementos */
+    left: 0;
+    top: 0;
+    width: 100%; /* Ancho completo */
+    height: 100%; /* Alto completo */
+    overflow-y:scroll;
+   
+    background-color: rgb(0,0,0); /* Color de fondo negro */
+    background-color: rgba(0,0,0,0.4); /* Fondo negro con opacidad */
+  }
+
+  .modal-content {
+    background-color: #fefefe;
+    margin: 5% auto; /* Centrado vertical */
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%; /* Ancho del modal */
+    max-width: 600px; /* Ancho máximo */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra */
+  }
+
+  .close {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+  }
+
+  .close:hover,
+  .close:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+
+  /* Input Styles */
+#modal input[type="text"],
+#modal input[type="number"],
+#modal input[type="date"],
+#modal textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modal select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modal button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+/* Estilos para el modal DE CREAR VERSION */
+#modals {
+  display: none; /* Oculto por defecto */
+  position: fixed; /* Fijo en la pantalla */
+  z-index: 1000; /* Asegura que se muestre sobre otros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Ancho completo */
+  height: 100%; /* Alto completo */
+  overflow-y: scroll;
+
+  background-color: rgb(0, 0, 0); /* Color de fondo negro */
+  background-color: rgba(0, 0, 0, 0.4); /* Fondo negro con opacidad */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* Centrado vertical */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Ancho del modal */
+  max-width: 600px; /* Ancho máximo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+/* Input Styles */
+#modals input[type="text"],
+#modals input[type="number"],
+#modals input[type="date"],
+#modals textarea {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modals select {
+  width: 100%;
+  padding: 10px;
+  margin-bottom: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+}
+
+#modals button {
+  background-color: #4CAF50;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+</style>
+
 
 
 {% endblock %}
