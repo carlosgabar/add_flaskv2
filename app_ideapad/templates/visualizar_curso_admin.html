@@ -69,9 +69,11 @@
                     {% if certificados %}
                         <th>Certificado</th>
                     {% endif %}
-
+                
                 </tr>
                 <tbody>    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
+
+              
                     {%for id_trabajador,nombre,apellido in trabajadores %}
 
                     <td>
@@ -84,14 +86,14 @@
                         {{ apellido }}
                     </td>
                     <td> 
-                        <form action="{{ url_for('eliminarid', id=id_trabajador,idcurso=id) }}" method="get" style="display:inline;">
+                        <form action="{{ url_for('eliminarid', id=id_trabajador,idcurso=idversion) }}" method="get" style="display:inline;">
                           <button type="submit">Eliminar</button>
                         </form>
                     </td>
                     {% if certificados %}
                     <td>
 
-                        <form action="{{ url_for('certificadoid', id=id_trabajador,idcurso=id) }}" method="get" style="display:inline;">
+                        <form action="{{ url_for('certificadoid', id=id_trabajador,  idcurso=idversion) }}" method="get" style="display:inline;">
                             <button type="submit">Generar</button>
                         </form>
 
