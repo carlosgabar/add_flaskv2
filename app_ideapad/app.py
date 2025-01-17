@@ -20,6 +20,8 @@ import io
 
 app=Flask(__name__,template_folder='templates', static_folder='static')
 app.secret_key="curso"
+app.config['UPLOAD_FOLDER'] = 'static/archivos'  # Carpeta donde se guardarán los archivos
+
 
 idtrabajador=0
 id=0
@@ -55,6 +57,22 @@ def inicio():
                              ''')
         
         cursos=cursor.fetchall()
+
+        cursor.execute('''SELECT id_vcurso,fecha_fin
+        FROM curso c
+        JOIN v_curso v on c.id_curso=v.id_curso_original
+                             ''')
+        
+        actualizar=cursor.fetchall()
+
+        fecha_hoy = datetime.now().date()
+
+        for fila in actualizar:
+            id_registro = fila[0]
+            fecha_registro = fila[1].date() 
+
+            if fecha_registro>fecha_hoy:
+                cursor.execute('''UPDATE v_curso SET status='finalizado' WHERE id_vcurso=%s''',(id_registro,))
 
         print(cursos)
         conectar.commit()
@@ -445,6 +463,7 @@ def crear():
 def editar():
 
     try:
+        mensaje=False
         conectar=conectar_bd()
         cursor=conectar.cursor()
 
@@ -495,6 +514,11 @@ def editar():
 
             cursor.execute('''UPDATE h_curso SET cant_horas=%s WHERE id_vcurso=%s''',(canthoras,id))
             
+        else:
+         
+
+         mensaje=True
+
 
         cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
     ''')
@@ -511,13 +535,13 @@ def editar():
         conectar.close()
 
 
-    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
 @app.route('/crearversion',methods=['POST'])
 def crearversion():
     
     try:
-
+        mensaje=False
         conectar=conectar_bd()
         cursor=conectar.cursor()
 
@@ -574,12 +598,19 @@ def crearversion():
             cursor.execute('''INSERT INTO h_curso(id_curso_original,cant_horas,id_vcurso) VALUES(%s,%s,%s)''',
                        (id,canthoras,id_vcurso))
             
+        else:
+
+         
+
+            mensaje=True
 
         cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original 
     ''')
         cursos=cursor.fetchall()
         print(cursos)
         conectar.commit()
+
+
     
     except Exception as e:
         print(f"Error al realizar la consulta: {e}")
@@ -590,7 +621,7 @@ def crearversion():
         conectar.close()
 
 
-    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
 
    
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -982,7 +1013,7 @@ def visualizarcurso(id):
 def agregar():
 
     try:
- 
+        
         opcion=request.form['statuss']
         print("la opcion es :" ,opcion)
         conectar=conectar_bd()
@@ -1025,7 +1056,7 @@ def agregar():
 def agregartrabajador():
 
     try:
-
+        mensajeid=False
         id_trabajador=request.form['id']
         id_curso=request.form['idcurso']
 
@@ -1046,6 +1077,10 @@ def agregartrabajador():
             cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(id_curso,id_trabajador))
 
         
+        else:
+            mensajeid=True
+
+
         conectar.commit()
 
     except Exception as e:

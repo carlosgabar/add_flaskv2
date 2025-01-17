@@ -22,6 +22,28 @@
 
 </script>
 
+
+<script>
+
+  function ventanaemergenteidtrabajador(){
+
+    alert("No existe ese Trabajador");
+
+  }
+
+  window.onload=function(){
+
+    {% if mensajeid  %}
+
+      ventanaemergenteidtrabajador();
+
+    {% endif %}
+
+  };
+
+</script>
+
+
 <div class="agrupar">
   <div class="despliegue">
 
@@ -67,11 +89,11 @@
     <input type="text" id="nombrecurso" name="nombrecurso"  maxlength="100"  required>
 
     <label for="mombreponente">Ponente del curso</label>
-    <input type="text" id="nombreponente" name="nombreponente" required>
+    <input type="text" id="nombreponente" name="nombreponente" required maxlength="100" 
+                       pattern="[A-Za-z\s]+" 
+                       title="Solo se permiten letras y espacios">
 
     </div>
-
-    
 
     <div class="fechas">
 
@@ -97,10 +119,10 @@
     <div class="botones">
 
     <label for="minparticipantes">Minimo de participantes</label>
-    <input class="min" type="number" id="minparticipantes" min=0 name="minparticipantes" required>
+    <input class="min" type="number" id="minparticipantes" step="1"  min="0" title="Por favor, ingrese un número entero." name="minparticipantes" required>
 
     <label for="maxparticipantes">Maximo de Participantes</label>
-    <input class="max" type="number" id="maxparticipantes" min=0 name="maxparticipantes" required>
+    <input class="max" type="number" id="maxparticipantes" step="1"  min="0" title="Por favor, ingrese un número entero." name="maxparticipantes" required>
 
     </div>
 
@@ -112,12 +134,12 @@
     <input type="time" id="horainicio" name="horainicio"  required>
 
     <label for="Hora">Cantidad de Horas</label>
-    <input type="number" id="canthoras" name="canthoras"  min=0   required>
+    <input type="number" id="canthoras" name="canthoras" step="1"  min="0" title="Por favor, ingrese un número entero."     required>
 
     </div>
 
     <label for="descripcion">Descripcion del Curso</label>
-    <textarea name="descripcion" cols="70" rows="8"></textarea>
+    <textarea name="descripcion" cols="70" rows="8" maxlength="5000"></textarea>
 
     <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
     <input class="documento" type="file" id="documento" name="documento">
@@ -187,10 +209,12 @@
         </div>
         
         <label for="nombrecurso">Titulo del curso</label>
-        <input type="text" id="nombrecursoo" name="nombrecursoo" readonly>
+        <input type="text" id="nombrecursoo" name="nombrecursoo"  readonly>
 
         <label for="nombreponente">Ponente del curso</label>
-        <input type="text" id="nombreponentee" name="nombreponentee"  >
+        <input type="text" id="nombreponentee" name="nombreponentee" maxlength="100" 
+        pattern="[A-Za-z\s]+" 
+        title="Solo se permiten letras y espacios"  >
         <div class="form-groupp">
         <label for="fecha_inicio">Inicio</label>
         <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
@@ -202,10 +226,10 @@
         <div class="form-grouppp">
 
         <label for="minparticipantes">Minimo de participantes</label>
-        <input type="number" id="minparticipantess" name="minparticipantess" min=0 required>
+        <input type="number" id="minparticipantess" name="minparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
 
         <label for="maxparticipantes">Maximo de Participantes</label>
-        <input type="number" id="maxparticipantess" name="maxparticipantess" min=0 required>
+        <input type="number" id="maxparticipantess" name="maxparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
 
       </div>
        
@@ -221,12 +245,12 @@
         <input type="time" id="horainicioo" name="horainicioo"  required>
     
         <label for="Hora">Cantidad de Horas</label>
-        <input type="number" id="canthorass" name="canthorass" required>
+        <input type="number" id="canthorass" name="canthorass" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
   
         </div>
 
         <label for="descripcion">Descripcion del Curso</label>
-        <textarea name="descripcion" id="descripcion" cols="70" rows="8"></textarea>
+        <textarea name="descripcion" id="descripcion" cols="70" rows="8" maxlength="5000" ></textarea>
 
         <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
         <input class="documento" type="file" id="documento" name="documento">
@@ -258,7 +282,9 @@
           <input type="text" id="nombrecursoo__" name="nombrecursoo__" readonly>
   
           <label for="nombreponente">Ponente del curso</label>
-          <input type="text" id="nombreponentee" name="nombreponentee"  >
+          <input type="text" id="nombreponentee" name="nombreponentee" maxlength="100" 
+          pattern="[A-Za-z\s]+" 
+          title="Solo se permiten letras y espacios"   >
           <div class="form-groupp">
           <label for="fecha_inicio">Inicio</label>
           <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
@@ -270,10 +296,10 @@
           <div class="form-grouppp">
   
           <label for="minparticipantes">Minimo de participantes</label>
-          <input type="number" id="minparticipantess" name="minparticipantess" min=0 required>
+          <input type="number" id="minparticipantess" name="minparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
   
           <label for="maxparticipantes">Maximo de Participantes</label>
-          <input type="number" id="maxparticipantess" name="maxparticipantess" min=0 required>
+          <input type="number" id="maxparticipantess" name="maxparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
   
         </div>
          
@@ -289,12 +315,12 @@
           <input type="time" id="horainicio" name="horainicio"  required>
       
           <label for="Hora">Cantidad de Horas</label>
-          <input type="number" id="canthoras" name="canthoras" required>
+          <input type="number" id="canthoras" name="canthoras" step="1"  min="0" title="Por favor, ingrese un número entero." required>
     
           </div>
   
           <label for="descripcion">Descripcion del Curso</label>
-          <textarea name="descripcion" id="descripcion" cols="70" rows="8"></textarea>
+          <textarea name="descripcion" id="descripcion" cols="70" rows="8" maxlength="5000" ></textarea>
   
           <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
           <input class="documento" type="file" id="documento" name="documento">
@@ -635,9 +661,9 @@
 
 <div class="inputsagregar">
 <label for="id">ID del trabajador</label>
-<input type="number" id="id" name="id" class="idagregar">
+<input type="number" id="id" name="id" step="1"  min="0" title="Por favor, ingrese un número entero." class="idagregar">
 <label for="id">ID del curso</label>
-<input type="number" id="idcurso" name="idcurso" class="idagregar">
+<input type="number" id="idcurso" name="idcurso" step="1"  min="0" title="Por favor, ingrese un número entero." class="idagregar">
 <button class="boton" type="submit">Inscribir</button>
 </div>
 </form>
