@@ -22,6 +22,16 @@
 
 </script>
 
+<script>
+  window.onload = function() {
+      // Convertir los mensajes flash en un array de JavaScript
+      const messages = {{ get_flashed_messages(with_categories=True) | tojson }};
+      messages.forEach(function(message) {
+          alert(message[1]);  // Muestra el mensaje en una ventana emergente
+      });
+  }
+</script>
+
 
 <script>
 
@@ -70,6 +80,7 @@
         <ul>
           <li><a href="#" onclick="mostrarFormulario('editar')">Editar </a></li>  
           <li><a href="#" onclick="mostrarFormulario('agregar')">Agregar trabajador </a></li> <!-- AGREGAR TRABAJADOR A ALGUN CURSO EN ESPECIFICO  -->
+          <li><a href="#" onclick="mostrarFormulario('version')">Crear Version</a></li> <!-- AGREGAR TRABAJADOR A ALGUN CURSO EN ESPECIFICO  -->
         </ul>
       </li>
     </ul>
@@ -150,8 +161,109 @@
   </form>
 </div>
 
+<div id="version" class="formularios">
+
+  <h2>Crear version de un curso</h2>
+
+<div class="listado">
+  <table>
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Tema</th>
+        <th>Crear</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for id,tema,p in original %}
+      <tr>
+        <td>{{id}}</td>
+        <td>{{tema}}</td>
+        <td>
+          <button onclick="openModals('{{id}}','{{tema}}')">Version</button>
+        </td>
+      </tr>
+
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+      <!-- Modal de NUEVA VERSION DE UN CURSO ORIGINAL-->
+      <div id="modals" style="display:none;"> 
+        <div class="modal-content">
+          <span class="close" onclick="closeModal_()">&times;</span>
+          <form id="versionform" action="/crearversion" method="post">
+            
+            <div class="form-group">
+              <label for="estatus">Status</label>
+              <select id="status" name="status">
+                <option value="activo">Activo</option>
+                <option value="finalizado">Finalizado</option>
+                <option value="progreso">En Progreso</option>
+              </select>
+              <label for="idformacion">ID Original</label>
+              <input type="number" id="idformacion__" name="idformacion__"  readonly min="0">
+  
+            </div>
+            
+            <label for="nombrecurso">Titulo del curso</label>
+            <input type="text" id="nombrecursoo__" name="nombrecursoo__" readonly>
+    
+            <label for="nombreponente">Ponente del curso</label>
+            <input type="text" id="nombreponentee" name="nombreponentee" maxlength="100" 
+            pattern="[A-Za-z\s]+" 
+            title="Solo se permiten letras y espacios"   >
+            <div class="form-groupp">
+            <label for="fecha_inicio">Inicio</label>
+            <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
+    
+            <label for="fecha_fin">Fin</label>
+            <input type="date" id="fechafinn" name="fechafinn" required>
+    
+            </div>
+            <div class="form-grouppp">
+    
+            <label for="minparticipantes">Minimo de participantes</label>
+            <input type="number" id="minparticipantess" name="minparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
+    
+            <label for="maxparticipantes">Maximo de Participantes</label>
+            <input type="number" id="maxparticipantess" name="maxparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
+    
+          </div>
+           
+            <label for="localidad">Localidad</label>
+            <input type="text" id="localidadd" name="localidadd" required>
+    
+            <label for="salon">Salon/Edificio</label>
+            <input type="text" id="salonn" name="salonn" required>
+    
+            <div class="form-groupppp">
+    
+            <label for="Hora">Hora de Inicio</label>
+            <input type="time" id="horainicio" name="horainicio"  required>
+        
+            <label for="Hora">Cantidad de Horas</label>
+            <input type="number" id="canthoras" name="canthoras" step="1"  min="0" title="Por favor, ingrese un número entero." required>
+      
+            </div>
+    
+            <label for="descripcion">Descripcion del Curso</label>
+            <textarea name="descripcion" id="descripcion" cols="70" rows="8" maxlength="5000" ></textarea>
+    
+            <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
+            <input class="documento" type="file" id="documento" name="documento">
+    
+            <div class="editar"><button class="boton" type="submit">Editar</button></div>
+          </form>
+        </div>
+      </div>
+
+</div>
+
 <div id="editar" class="formularios">
   <h2>Formulario para Editar Curso</h2>
+
   <div class="listado">
     <table>
       <thead>
@@ -164,11 +276,10 @@
           <th>Minimo de Participantes</th>
           <th>Maximo de participantes</th>
           <th>Accion</th>
-          <th>Crear</th>
         </tr>
       </thead>
       <tbody>
-        {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in cursos %}
+        {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in cursos %}
         <tr>
           <td>{{idversion}}</td>
           <td>{{tema}}</td>
@@ -180,9 +291,6 @@
           <td>
             <button onclick="openModal('{{idversion}}', '{{tema|escape}}', '{{ponente|escape}}', '{{inicio}}', '{{fin}}', '{{min}}', '{{max}}', '{{descripcion|escape}}', '{{localidad|escape}}',
              '{{salon|escape}}','{{horas}}' , '{{canthoras}}')">Editar</button>
-          </td>
-          <td>
-            <button onclick="openModals('{{id}}','{{tema}}')">Version</button>
           </td>
         </tr>
 
@@ -212,32 +320,32 @@
         <input type="text" id="nombrecursoo" name="nombrecursoo"  readonly>
 
         <label for="nombreponente">Ponente del curso</label>
-        <input type="text" id="nombreponentee" name="nombreponentee" maxlength="100" 
+        <input type="text" id="nombreponenteeq" name="nombreponenteeq" maxlength="100" 
         pattern="[A-Za-z\s]+" 
         title="Solo se permiten letras y espacios"  >
         <div class="form-groupp">
         <label for="fecha_inicio">Inicio</label>
-        <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
+        <input type="datetime-local" id="fechainiciooq" name="fechainiciooq" required>
 
         <label for="fecha_fin">Fin</label>
-        <input type="date" id="fechafinn" name="fechafinn" required>
+        <input type="date" id="fechafinnq" name="fechafinnq" required>
 
         </div>
         <div class="form-grouppp">
 
         <label for="minparticipantes">Minimo de participantes</label>
-        <input type="number" id="minparticipantess" name="minparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
+        <input type="number" id="minparticipantessq" name="minparticipantessq" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
 
         <label for="maxparticipantes">Maximo de Participantes</label>
-        <input type="number" id="maxparticipantess" name="maxparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
+        <input type="number" id="maxparticipantessq" name="maxparticipantessq" step="1"  min="0" title="Por favor, ingrese un número entero."  required>
 
       </div>
        
         <label for="localidad">Localidad</label>
-        <input type="text" id="localidadd" name="localidadd" required>
+        <input type="text" id="localidaddq" name="localidaddq" required>
 
         <label for="salon">Salon/Edificio</label>
-        <input type="text" id="salonn" name="salonn" required>
+        <input type="text" id="salonnq" name="salonnq" required>
 
         <div class="form-groupppp">
 
@@ -250,7 +358,7 @@
         </div>
 
         <label for="descripcion">Descripcion del Curso</label>
-        <textarea name="descripcion" id="descripcion" cols="70" rows="8" maxlength="5000" ></textarea>
+        <textarea name="descripcionq" id="descripcionq" cols="70" rows="8" maxlength="5000" ></textarea>
 
         <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
         <input class="documento" type="file" id="documento" name="documento">
@@ -259,77 +367,6 @@
       </form>
     </div>
   </div>
-
-    <!-- Modal de NUEVA VERSION DE UN CURSO ORIGINAL-->
-    <div id="modals" style="display:none;"> 
-      <div class="modal-content">
-        <span class="close" onclick="closeModal_()">&times;</span>
-        <form id="versionform" action="/crearversion" method="post">
-          
-          <div class="form-group">
-            <label for="estatus">Status</label>
-            <select id="status" name="status">
-              <option value="activo">Activo</option>
-              <option value="finalizado">Finalizado</option>
-              <option value="progreso">En Progreso</option>
-            </select>
-            <label for="idformacion">ID Original</label>
-            <input type="number" id="idformacion__" name="idformacion__"  readonly min="0">
-
-          </div>
-          
-          <label for="nombrecurso">Titulo del curso</label>
-          <input type="text" id="nombrecursoo__" name="nombrecursoo__" readonly>
-  
-          <label for="nombreponente">Ponente del curso</label>
-          <input type="text" id="nombreponentee" name="nombreponentee" maxlength="100" 
-          pattern="[A-Za-z\s]+" 
-          title="Solo se permiten letras y espacios"   >
-          <div class="form-groupp">
-          <label for="fecha_inicio">Inicio</label>
-          <input type="datetime-local" id="fechainicioo" name="fechainicioo" required>
-  
-          <label for="fecha_fin">Fin</label>
-          <input type="date" id="fechafinn" name="fechafinn" required>
-  
-          </div>
-          <div class="form-grouppp">
-  
-          <label for="minparticipantes">Minimo de participantes</label>
-          <input type="number" id="minparticipantess" name="minparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
-  
-          <label for="maxparticipantes">Maximo de Participantes</label>
-          <input type="number" id="maxparticipantess" name="maxparticipantess" step="1"  min="0" title="Por favor, ingrese un número entero." required>
-  
-        </div>
-         
-          <label for="localidad">Localidad</label>
-          <input type="text" id="localidadd" name="localidadd" required>
-  
-          <label for="salon">Salon/Edificio</label>
-          <input type="text" id="salonn" name="salonn" required>
-  
-          <div class="form-groupppp">
-  
-          <label for="Hora">Hora de Inicio</label>
-          <input type="time" id="horainicio" name="horainicio"  required>
-      
-          <label for="Hora">Cantidad de Horas</label>
-          <input type="number" id="canthoras" name="canthoras" step="1"  min="0" title="Por favor, ingrese un número entero." required>
-    
-          </div>
-  
-          <label for="descripcion">Descripcion del Curso</label>
-          <textarea name="descripcion" id="descripcion" cols="70" rows="8" maxlength="5000" ></textarea>
-  
-          <label for="documento">Ingrese Guia/Documentos/Apuntes</label>
-          <input class="documento" type="file" id="documento" name="documento">
-  
-          <div class="editar"><button class="boton" type="submit">Editar</button></div>
-        </form>
-      </div>
-    </div>
-
 
 </div>
 
@@ -368,14 +405,14 @@
 
     document.getElementById('idformacion').value = id;
     document.getElementById('nombrecursoo').value = tema;
-    document.getElementById('nombreponentee').value = ponente;
-    document.getElementById('fechainicioo').value = inicio;
-    document.getElementById('fechafinn').value = fin;
-    document.getElementById('minparticipantess').value = min;
-    document.getElementById('maxparticipantess').value = max;
-    document.getElementById('descripcion').value = descripcion;
-    document.getElementById('localidadd').value = localidad;
-    document.getElementById('salonn').value = salon;
+    document.getElementById('nombreponenteeq').value = ponente;
+    document.getElementById('fechainiciooq').value = inicio;
+    document.getElementById('fechafinnq').value = fin;
+    document.getElementById('minparticipantessq').value = min;
+    document.getElementById('maxparticipantessq').value = max;
+    document.getElementById('descripcionq').value = descripcion;
+    document.getElementById('localidaddq').value = localidad;
+    document.getElementById('salonnq').value = salon;
     document.getElementById('horainicioo').value = horas;
     document.getElementById('canthorass').value = canthoras;
 
@@ -617,7 +654,7 @@
           <th>Editar</th> 
          
         </tr> </thead> 
-        <tbody id="course-list"> {% for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+        <tbody id="course-list"> {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
           idoriginal,ponente,localidad,salon in listado %} 
           <tr> 
             <td>{{ idversion }}</td> 
@@ -689,7 +726,7 @@
         <th>Maximo de Participantes</th> 
         <th>Acción</th>
       </tr> </thead> 
-      <tbody id="course-listt"> {% for id,tema,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
+      <tbody id="course-listt"> {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
         idoriginal,ponente,localidad,salon in listado %} 
         <tr> 
           <td>{{ idversion }}</td> 

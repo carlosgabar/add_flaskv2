@@ -5,7 +5,7 @@
 <div class="general">
   <h2 id="titulo">Cursos Disponibles</h2>
   <div class="accordion activos" id="accordionactivosi"> 
-      {% for id, tema, idversion, inicio, fin, min, max, descripcion, estado, horas, canthoras, idoriginal, ponente, localidad, salon in cursos %} 
+      {% for id, tema,p, idversion, inicio, fin, min, max, descripcion, estado, horas, canthoras, idoriginal, ponente, localidad, salon in cursos %} 
       <div class="accordion-item"> 
           <h2 class="accordion-header d-flex align-items-center justify-content-between" id="headingactivos{{ loop.index }}"> 
               <button class="accordion-button {{ 'collapsed' if not loop.first }}" 

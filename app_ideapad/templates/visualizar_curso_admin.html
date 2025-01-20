@@ -4,7 +4,7 @@
     <div class="todo">
 
     <div class="titulos">
-    {%  for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
+    {%  for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
 
     <h1>{{tema}}</h1>
     <h3>Ponente: {{ponente}}</h3>
@@ -21,7 +21,7 @@
 
     <div class="contenidoinformativo">
 
-    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
+    {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
         <p class="Minimo">Minimo de participantes: {{min}}</p>
         <p class="Maximo">Maximo de participantes: {{max}}</p>
         <p class="Fecha_inicio">Fecha de Inicio: {{inicio}}</p>
@@ -41,7 +41,7 @@
 
     <div class="descripcion">
 
-    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
+    {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
     <p>{{descripcion}}</p>
 
     {% endfor %}
@@ -49,6 +49,13 @@
     </div>
 
 </div>
+        {% for nombre in documentos %}
+
+        <a href="{{ url_for('descargar', nombre_archivo=nombre) }}">
+    <button>Descargar {{ nombre }}</button>
+        </a>
+
+        {% endfor %}
 
 </div>
 
@@ -71,7 +78,7 @@
                     {% endif %}
                 
                 </tr>
-                <tbody>    {% for id,tema,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
+                <tbody>    {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso  %}
 
               
                     {%for id_trabajador,nombre,apellido in trabajadores %}

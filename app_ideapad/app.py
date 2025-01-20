@@ -1,5 +1,5 @@
 from flask import Flask,send_file,Response
-from flask import render_template,redirect,session,request,jsonify,url_for
+from flask import render_template,redirect,session,request,jsonify,url_for,send_from_directory,flash
 from db import get_connection
 import datetime
 import os
@@ -58,6 +58,12 @@ def inicio():
         
         cursos=cursor.fetchall()
 
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
         cursor.execute('''SELECT id_vcurso,fecha_fin
         FROM curso c
         JOIN v_curso v on c.id_curso=v.id_curso_original
@@ -69,7 +75,7 @@ def inicio():
 
         for fila in actualizar:
             id_registro = fila[0]
-            fecha_registro = fila[1].date() 
+            fecha_registro = fila[1]
 
             if fecha_registro>fecha_hoy:
                 cursor.execute('''UPDATE v_curso SET status='finalizado' WHERE id_vcurso=%s''',(id_registro,))
@@ -85,7 +91,7 @@ def inicio():
         cursor.close()
         conectar.close()
 
-    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],original=original)
 
 @app.route('/login_trabajador')
 def login():
@@ -154,27 +160,76 @@ def menutrabajador(id):
                    WHERE tc.status='espera' and tc.id_trabajador=%s ''',(id,))
         espera=cursor.fetchone()
 
-        cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
-				   JOIN v_curso v on c.id_curso=v.id_curso_original 
-                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
-                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE v.status='activo' and tc.status='activo' and t.id_trabajador=%s ''',(id,))
+        cursor.execute('''SELECT 
+    c.nombre AS curso_nombre, 
+    v.ponente, 
+    v.descripcion, 
+    ARRAY_AGG(d.nombre) AS documentos
+        FROM 
+            curso c
+            JOIN 
+    v_curso v ON c.id_curso = v.id_curso_original 
+        JOIN 
+    curso_trabajador tc ON v.id_vcurso = tc.id_curso
+    JOIN 
+        trabajador t ON tc.id_trabajador = t.id_trabajador
+        LEFT JOIN 
+    documentos d ON v.id_vcurso = d.id_vcurso
+        WHERE 
+        v.status = 'activo' 
+        AND tc.status = 'activo' 
+        AND t.id_trabajador = %s
+        GROUP BY 
+    c.nombre, v.ponente, v.descripcion ''',(id,))
     
         cursosactivos=cursor.fetchall()
+        print(cursosactivos)
 
-        cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
-				   JOIN v_curso v on c.id_curso=v.id_curso_original 
-                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
-                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE v.status='progreso' and tc.status='progreso' and t.id_trabajador=%s ''',(id,))
+        cursor.execute('''SELECT 
+    c.nombre AS curso_nombre, 
+    v.ponente, 
+    v.descripcion, 
+    ARRAY_AGG(d.nombre) AS documentos
+        FROM 
+            curso c
+            JOIN 
+    v_curso v ON c.id_curso = v.id_curso_original 
+        JOIN 
+    curso_trabajador tc ON v.id_vcurso = tc.id_curso
+    JOIN 
+        trabajador t ON tc.id_trabajador = t.id_trabajador
+        LEFT JOIN 
+    documentos d ON v.id_vcurso = d.id_vcurso
+        WHERE 
+        v.status = 'progreso' 
+        AND tc.status = 'progreso' 
+        AND t.id_trabajador = %s
+        GROUP BY 
+    c.nombre, v.ponente, v.descripcion ''',(id,))
     
         cursosprogreso=cursor.fetchall()
 
-        cursor.execute('''SELECT c.nombre,v.ponente,v.descripcion FROM curso c
-				   JOIN v_curso v on c.id_curso=v.id_curso_original 
-                   JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
-                   JOIN trabajador t on tc.id_trabajador=t.id_trabajador
-                   WHERE v.status='finalizado' and tc.status='finalizado' and t.id_trabajador=%s ''',(id,))
+        cursor.execute('''SELECT 
+    c.nombre AS curso_nombre, 
+    v.ponente, 
+    v.descripcion, 
+    ARRAY_AGG(d.nombre) AS documentos
+        FROM 
+            curso c
+            JOIN 
+    v_curso v ON c.id_curso = v.id_curso_original 
+        JOIN 
+    curso_trabajador tc ON v.id_vcurso = tc.id_curso
+    JOIN 
+        trabajador t ON tc.id_trabajador = t.id_trabajador
+        LEFT JOIN 
+    documentos d ON v.id_vcurso = d.id_vcurso
+        WHERE 
+        v.status = 'finalizado' 
+        AND tc.status = 'finalizado' 
+        AND t.id_trabajador = %s
+        GROUP BY 
+    c.nombre, v.ponente, v.descripcion ''',(id,))
     
         cursosfinalizados=cursor.fetchall()
 
@@ -248,7 +303,24 @@ def elecciontrabajador():
     
         cursos=cursor.fetchall()
 
-        cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(curso_id,id))
+        cursor.execute('''SELECT COUNT(*) FROM curso_trabajador tc WHERE tc.id_curso=%s ''',(curso_id,))
+        nroinscritos=cursor.fetchone()
+        print(nroinscritos)
+
+        cursor.execute('''SELECT maximo FROM v_curso v WHERE v.id_vcurso=%s''',(curso_id,))
+        maximo=cursor.fetchone()
+        print(maximo)
+
+        cursor.execute('''SELECT COUNT(*) FROM curso_trabajador tc WHERE tc.id_curso=%s and tc.id_trabajador=%s''',(curso_id,id))
+        existe=cursor.fetchone()
+
+        if nroinscritos[0]<=maximo[0] and existe[0]==0:
+            print("entre")
+            cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(curso_id,id))
+
+        else:
+            
+            flash('No se puede inscribir, se ha alcanzado el máximo de inscritos.', 'error')
 
         conectar.commit()
 
@@ -361,7 +433,6 @@ def crear():
     try:
 
         mensaje=False
-        global id
         conectar=conectar_bd()
         cursor=conectar.cursor()
 
@@ -392,12 +463,11 @@ def crear():
         basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actuall
         filename = secure_filename(documento.filename) #Nombre original del archivoo
             
-        extension           = os.path.splitext(filename)[1]
-        print(extension)
+        extension= os.path.splitext(filename)[1]
     
-        id=id+1
-        variable='documento'+str(id)
-        nuevoNombreFile     = variable+filename 
+        
+        variable='doc'
+        nuevoNombreFile= variable+filename 
         print(nuevoNombreFile)
      
         cargar= os.path.join (basepath, 'static/archivos', nuevoNombreFile)    
@@ -433,7 +503,8 @@ def crear():
             cursor.execute('''INSERT INTO h_curso(id_curso_original,cant_horas,id_vcurso) VALUES(%s,%s,%s)''',
                        (id_curso,canthoras,id_vcurso))
 
-        
+            cursor.execute('''INSERT INTO  documentos(id_documento,id_vcurso,nombre) VALUES(nextval('sec_documento'),%s,%s)''',(id_vcurso,nuevoNombreFile))
+
         else:
          
 
@@ -446,6 +517,13 @@ def crear():
         cursos=cursor.fetchall()
         print(cursos)
 
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
+
         conectar.commit()
 
     except Exception as e:
@@ -457,7 +535,7 @@ def crear():
         conectar.close()
 
 
-    return render_template('menu_administrador.html',cursos=cursos,mensaje=mensaje,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',cursos=cursos,mensaje=mensaje,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],original=original)
 
 @app.route('/editar',methods=['POST'])
 def editar():
@@ -479,17 +557,31 @@ def editar():
         id = request.form['idformacion']
         opcion=request.form['status']
         nombre=request.form['nombrecursoo']
-        nombreponente=request.form['nombreponentee']
-        fechainicio=request.form['fechainicioo']
-        fechafin=request.form['fechafinn']
-        minparticipantes=request.form['minparticipantess']
-        maxparticipantes=request.form['maxparticipantess']
-        parrafo=request.form['descripcion']
-        localidad=request.form['localidadd']
-        salon=request.form['salonn']
+        nombreponente=request.form['nombreponenteeq']
+        fechainicio=request.form['fechainiciooq']
+        fechafin=request.form['fechafinnq']
+        minparticipantes=request.form['minparticipantessq']
+        maxparticipantes=request.form['maxparticipantessq']
+        parrafo=request.form['descripcionq']
+        localidad=request.form['localidaddq']
+        salon=request.form['salonnq']
         tiempo=request.form['horainicio']
         canthoras=request.form['canthoras']
         print("aqui",canthoras)
+
+        documento   = request.files['documento']
+        basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actuall
+        filename = secure_filename(documento.filename) #Nombre original del archivoo
+            
+        extension= os.path.splitext(filename)[1]
+    
+
+        variable='documento'
+        nuevoNombreFile     = variable+filename 
+        print(nuevoNombreFile)
+     
+        cargar= os.path.join (basepath, 'static/archivos', nuevoNombreFile)    
+        documento.save(cargar)
 
         hora1=datetime.strptime(tiempo,'%H:%M').time()
         fecha1=datetime.strptime(fechainicio,'%Y-%m-%d')
@@ -513,6 +605,9 @@ def editar():
         #totalhoras=int(canthoras)+int(horast)
 
             cursor.execute('''UPDATE h_curso SET cant_horas=%s WHERE id_vcurso=%s''',(canthoras,id))
+
+            cursor.execute('''INSERT INTO  documentos(id_documento,id_vcurso,nombre) VALUES(nextval('sec_documento'),%s,%s)''',(id,nuevoNombreFile))
+
             
         else:
          
@@ -524,6 +619,14 @@ def editar():
     ''')
         cursos=cursor.fetchall()
         print(cursos)
+
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
+
         conectar.commit()
     
     except Exception as e:
@@ -535,7 +638,7 @@ def editar():
         conectar.close()
 
 
-    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],original=original)
 
 @app.route('/crearversion',methods=['POST'])
 def crearversion():
@@ -571,6 +674,19 @@ def crearversion():
         canthoras=request.form['canthoras']
         print("aqui",canthoras)
 
+        documento   = request.files['documento']
+        basepath = os.path.dirname (__file__) #La ruta donde se encuentra el archivo actuall
+        filename = secure_filename(documento.filename) #Nombre original del archivoo
+            
+        extension= os.path.splitext(filename)[1]
+
+        variable='documento'
+        nuevoNombreFile     = variable+filename 
+        print(nuevoNombreFile)
+     
+        cargar= os.path.join (basepath, 'static/archivos', nuevoNombreFile)    
+        documento.save(cargar)
+
         hora1=datetime.strptime(tiempo,'%H:%M').time()
         fecha1=datetime.strptime(fechainicio,'%Y-%m-%d')
         fecha2=datetime.strptime(fechafin,'%Y-%m-%d')
@@ -598,6 +714,9 @@ def crearversion():
             cursor.execute('''INSERT INTO h_curso(id_curso_original,cant_horas,id_vcurso) VALUES(%s,%s,%s)''',
                        (id,canthoras,id_vcurso))
             
+            cursor.execute('''INSERT INTO  documentos(id_documento,id_vcurso,nombre) VALUES(nextval('sec_documento'),%s,%s)''',(id_vcurso,nuevoNombreFile))
+            
+        
         else:
 
          
@@ -610,6 +729,13 @@ def crearversion():
         print(cursos)
         conectar.commit()
 
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
+
 
     
     except Exception as e:
@@ -621,7 +747,7 @@ def crearversion():
         conectar.close()
 
 
-    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',mensaje=mensaje,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],original=original)
 
    
 @app.route('/editar/<int:id>', methods=['GET', 'POST'])
@@ -650,6 +776,13 @@ def editarid(id):
         cursor.execute('''SELECT * FROM curso c JOIN v_curso v on c.id_curso=v.id_curso_original''')
         cursos=cursor.fetchall()
 
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
+
         conectar.commit()
     
     except Exception as e:
@@ -660,7 +793,7 @@ def editarid(id):
         cursor.close()
         conectar.close()
 
-    return render_template('menu_administrador.html',datos=detalle,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0])
+    return render_template('menu_administrador.html',datos=detalle,cursos=cursos,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],original=original)
 
 @app.route('/eliminar/<int:id>/<int:idcurso>', methods=['GET', 'POST'])
 def eliminarid(id,idcurso):
@@ -677,6 +810,13 @@ def eliminarid(id,idcurso):
                              ''')
         cursos=cursor.fetchall()
 
+        cursor.execute('''SELECT *
+                    FROM curso c                
+                             ''')
+        
+        original=cursor.fetchall()
+
+
         cursor.execute('''DELETE FROM curso_trabajador WHERE id_curso=%s and id_trabajador=%s''',(idcurso,id))
 
         conectar.commit()
@@ -689,7 +829,7 @@ def eliminarid(id,idcurso):
         cursor.close()
         conectar.close()
 
-    return render_template('menu_administrador.html',cursos=cursos)
+    return render_template('menu_administrador.html',cursos=cursos,original=original)
 
 @app.route('/certificado/<int:id>/<int:idcurso>', methods=['GET', 'POST'])
 def certificadoid(id, idcurso):
@@ -925,7 +1065,7 @@ def visualizarpor():
         rows = '' 
         for curso in cursos: 
             rows += f''' <tr> 
-            <td>{curso[2]}</td> 
+            <td>{curso[3]}</td> 
             <td>{curso[1]}</td> 
             <td>{curso[12]}</td> 
             <td>{curso[3]}</td> 
@@ -934,7 +1074,7 @@ def visualizarpor():
             <td>{curso[6]}</td> 
             <td>{curso[8]}</td>
             <td>
-                <form action="{url_for('visualizarcurso', id=curso[2])}" method="get" style="display:inline;">
+                <form action="{url_for('visualizarcurso', id=curso[3])}" method="get" style="display:inline;">
                   <button type="submit">Visualizar</button>
                 </form>
             </td>
@@ -995,6 +1135,11 @@ def visualizarcurso(id):
         print(inscritos)
         print(trabajadores)
         print(curso)
+
+        cursor.execute('''SELECT nombre FROM documentos WHERE id_vcurso=%s''',(id,))
+        documentos=cursor.fetchone()
+        print(documentos)
+
         conectar.commit()
 
 
@@ -1006,8 +1151,11 @@ def visualizarcurso(id):
         cursor.close()
         conectar.close()
 
-    return render_template('visualizar_curso_admin.html',curso=curso,inscritos=inscritos[0],trabajadores=trabajadores,certificados=certificados)
+    return render_template('visualizar_curso_admin.html',curso=curso,inscritos=inscritos[0],trabajadores=trabajadores,certificados=certificados,documentos=documentos)
 
+@app.route('/descargar/<nombre_archivo>')
+def descargar(nombre_archivo):
+    return send_from_directory('static/archivos', nombre_archivo,as_attachment=True)
 
 @app.route('/agregar',methods=['POST'])
 def agregar():
@@ -1063,6 +1211,14 @@ def agregartrabajador():
         conectar=conectar_bd()
         cursor=conectar.cursor()
 
+        cursor.execute('''SELECT id_curso FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
+        curso_original=cursor.fetchall()
+
+        cursor.execute('''SELECT p_planificados FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
+        planificados=cursor.fetchone()
+
+        totalplanificados=planificados[0]+1
+
         cursor.execute('''SELECT COUNT(*) FROM trabajador WHERE id_trabajador=%s ''',(id_trabajador,))
         existe=cursor.fetchone()
 
@@ -1072,13 +1228,28 @@ def agregartrabajador():
         cursor.execute('''SELECT * FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
         cursos=cursor.fetchall()
 
-        if existe[0]>0 and existecurso[0]>0:
+        cursor.execute('''SELECT COUNT(*) FROM curso_trabajador tc WHERE tc.id_curso=%s ''',(id_curso,))
+        nroinscritos=cursor.fetchall()
 
-            cursor.execute('''INSERT INTO curso_trabajador (id_ct,id_curso,id_trabajador) VALUES (nextval('sec_curso_trabajador'),%s,%s)''',(id_curso,id_trabajador))
+        cursor.execute('''SELECT maximo FROM v_curso v WHERE v.id_vcurso=%s''',(id_curso,))
+        maximo=cursor.fetchall()
 
-        
+        cursor.execute('''SELECT COUNT(*) FROM curso_trabajador tc WHERE tc.id_curso=%s and tc.id_trabajador=%s''',(id_curso,id_trabajador))
+        yainscrito=cursor.fetchone()
+
+        if existe[0] > 0 and existecurso[0] > 0 and nroinscritos <= maximo:
+            if yainscrito == [0]:  # Verifica si no hay inscripción previa
+                cursor.execute('''INSERT INTO curso_trabajador (id_ct, id_curso, id_trabajador) 
+                          VALUES (nextval('sec_curso_trabajador'), %s, %s)''', (id_curso, id_trabajador))
+                
+                cursor.execute('''UPDATE curso SET p_planificados=%s WHERE curso_original=%s''',(totalplanificados,curso_original))
+            
+            else:
+              
+                flash('El trabajador ya está inscrito en este curso.', 'error')  # Mensaje de error para inscripción previa
         else:
-            mensajeid=True
+        
+            flash('No se puede inscribir, se ha alcanzado el máximo de inscritos.', 'error')  # Mensaje de error por máximo alcanzado
 
 
         conectar.commit()
