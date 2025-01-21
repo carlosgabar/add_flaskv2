@@ -114,31 +114,52 @@ body {
 
 }
 
-.ordenar label{
-
-  font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
-  color:darkcyan;
-  display:block;
 
 
+.listado {
+  margin: auto;
+  width: 100%; /* Aumentar el ancho para que se vea mejor */
+  padding: 20px; /* Añadir espacio interno */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  background-color: #f9f9f9; /* Fondo claro para resaltar */
 }
 
-.listado table{
-
+.listado table {
   border-collapse: collapse;
-  width: 50%;
-  margin:auto;
+  width: 100%; /* Usar todo el ancho disponible */
   margin-top: 10px;
-  
 }
 
-.listado th, .listado td{
-
-  border: 1px solid rgb(9, 9, 9);
-  padding: 3px;
+.listado th, .listado td {
+  border: 1px solid rgb(200, 200, 200); /* Color de borde más suave */
+  padding: 10px; /* Espaciado interno mayor */
   text-align: left;
-  background-color: white;
+  background-color: #ffffff; /* Fondo blanco para las celdas */
+  transition: background-color 0.3s; /* Transición suave para el hover */
+}
 
+.listado th {
+  background-color: #4CAF50; /* Color de fondo para el encabezado */
+  color: white; /* Color del texto en el encabezado */
+}
+
+.listado tr:hover td {
+  background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+}
+
+.listado button {
+  background-color: #007BFF; /* Color de fondo del botón */
+  color: white; /* Color del texto del botón */
+  border: none; /* Sin borde */
+  padding: 10px 15px; /* Espaciado interno del botón */
+  border-radius: 5px; /* Bordes redondeados del botón */
+  cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+  transition: background-color 0.3s; /* Transición suave */
+}
+
+.listado button:hover {
+  background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
 }
 
 .jugadores .arreglarid input{
@@ -189,41 +210,7 @@ body {
 
 }
 
-.ordenar .botones .min,.max{
 
-  width: 10%;
-
-}
-
-.ordenar .boton{
-
-  
- 
-  margin-left:250px;
-
-  margin-bottom: 10px;
-
-}
-
-.ordenar .botonid{
-
-  width: 60%;
-
-}
-
-.ordenar .ajustar input{
-
-  width: 100%;
-
-}
-
-
-.ordenar textarea{
-
-  resize: none;
-  width:100%;
-
-}
 
 
 .visualizar .filtros{
@@ -233,13 +220,8 @@ body {
 
 }
 
-.botones{
 
-  display: flex;
-  
-  
 
-}
 .linea{
 
   margin-top: 2%;
@@ -339,4 +321,88 @@ body {
 
   text-align: center;
 
+}
+
+
+.ordenar {
+  margin: auto;
+  width: 80%; /* Aumentar el ancho para mejor visualización */
+  padding: 20px; /* Espaciado interno */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+  background-color: #f9f9f9; /* Fondo claro */
+}
+
+.ordenar h2 {
+  text-align: center; /* Centrar el título */
+  color: #333; /* Color del texto */
+}
+
+.ordenar label {
+  font-family: 'Trebuchet MS', Arial, sans-serif;
+  color: darkcyan;
+  display: block;
+  margin-bottom: 5px; /* Espaciado debajo de las etiquetas */
+}
+
+.ordenar input[type="text"],
+.ordenar input[type="date"],
+.ordenar input[type="number"],
+.ordenar input[type="time"],
+.ordenar textarea,
+.ordenar input[type="file"] {
+  width: 100%; /* Ancho completo */
+  padding: 10px; /* Espaciado interno */
+  margin-bottom: 15px; /* Espaciado entre campos */
+  border: 1px solid #ccc; /* Borde ligero */
+  border-radius: 4px; /* Bordes redondeados */
+  box-sizing: border-box; /* Incluir padding y borde en el ancho total */
+  transition: border-color 0.3s; /* Transición suave */
+}
+
+.ordenar input:focus,
+.ordenar textarea:focus {
+  border-color: darkcyan; /* Color del borde al enfocar */
+  outline: none; /* Sin contorno */
+}
+
+.ordenar .botones {
+  display: flex;
+  justify-content: space-between; /* Espacio entre botones */
+  margin-top: 20px; /* Espaciado superior */
+}
+
+.ordenar .boton {
+  background-color: #007BFF; /* Color de fondo del botón */
+  color: white; /* Color del texto */
+  border: none; /* Sin borde */
+  padding: 10px 15px; /* Espaciado interno */
+  border-radius: 5px; /* Bordes redondeados */
+  cursor: pointer; /* Cambia el cursor al pasar sobre el botón */
+  transition: background-color 0.3s; /* Transición suave */
+}
+
+.ordenar .boton:hover {
+  background-color: #0056b3; /* Color al pasar el mouse */
+}
+
+.linea {
+  margin-top: 2%;
+}
+
+.fechas, .tiempo, .botones {
+  display: flex;
+  justify-content: space-between; /* Espacio entre elementos */
+  margin-left: 0; /* Alinear a la izquierda */
+  margin-top: 10px; /* Espaciado superior */
+}
+
+.fechas label,
+.tiempo label,
+.botones label {
+  margin-right: 10px; /* Espaciado a la derecha */
+}
+
+.tiempo input#canthoras {
+  width: 20%; /* Ajustar el ancho de la cantidad de horas */
 }

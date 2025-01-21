@@ -16,41 +16,56 @@
     </body>
    
     <script>
-        var ctx= document.getElementById("myChart").getContext("2d");
-        var myChart= new Chart(ctx,{
-            type:"bar",
-            data:{
-                
+        var ctx = document.getElementById("myChart").getContext("2d");
+        var myChart = new Chart(ctx, {
+            type: "bar",
+            data: {
                 labels: [
-                {% for columna in columnas %}
-                    '{{ columna }}',
-                {% endfor %}
-            ],
-                datasets:[{
-                        label:'{{titulo}}',
-                        data:[{% for numero in numeros %}
-
-                            '{{numero}}',
+                    {% for columna in columnas %}
+                        '{{ columna }}',
+                    {% endfor %}
+                ],
+                datasets: [
+                    {
+                        label: '{{ titulo }}',
+                        data: [
+                            {% for numero in numeros %}
+                                '{{ numero }}',
                             {% endfor %}
                         ],
-                        backgroundColor:[
-                            'rgb(66, 134, 244,0.5)',
-                            'rgb(74, 135, 72,0.5)',
-                            'rgb(229, 89, 50,0.5)'
+                        backgroundColor: [
+                            'rgba(66, 134, 244, 0.5)',
+                            'rgba(74, 135, 72, 0.5)',
+                            'rgba(229, 89, 50, 0.5)'
                         ]
-                }]
+                    },
+                    {% if otrotitulo != "" %}  // Verifica si 'otrotitulo' no está vacío
+                    {
+                        label: '{{ otrotitulo }}',
+                        data: [
+                            {% for numero in onumeros %}
+                                '{{ numero }}',
+                            {% endfor %}
+                        ],
+                        backgroundColor: [
+                            'rgba(66, 134, 244, 0.5)',
+                            'rgba(74, 135, 72, 0.5)',
+                            'rgba(229, 89, 50, 0.5)'
+                        ]
+                    }
+                    {% endif %}
+                ]
             },
-            options:{
-                scales:{
-                    yAxes:[{
-                            ticks:{
-                                beginAtZero:true
-                            }
+            options: {
+                scales: {
+                    yAxes: [{
+                        ticks: {
+                            beginAtZero: true
+                        }
                     }]
                 }
             }
         });
-
     </script>
  
 </html>

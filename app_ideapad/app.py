@@ -1137,7 +1137,7 @@ def visualizarcurso(id):
         print(curso)
 
         cursor.execute('''SELECT nombre FROM documentos WHERE id_vcurso=%s''',(id,))
-        documentos=cursor.fetchone()
+        documentos=cursor.fetchall()
         print(documentos)
 
         conectar.commit()
@@ -1177,7 +1177,7 @@ def agregar():
         rows = '' 
         for curso in cursos: 
             rows += f''' <tr> 
-            <td>{curso[2]}</td> 
+            <td>{curso[3]}</td> 
             <td>{curso[1]}</td> 
             <td>{curso[12]}</td> 
             <td>{curso[3]}</td> 
@@ -1211,10 +1211,10 @@ def agregartrabajador():
         conectar=conectar_bd()
         cursor=conectar.cursor()
 
-        cursor.execute('''SELECT id_curso FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
+        cursor.execute('''SELECT id_curso FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original WHERE v.id_vcurso=%s''',(id_curso,))
         curso_original=cursor.fetchall()
 
-        cursor.execute('''SELECT p_planificados FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original ''')
+        cursor.execute('''SELECT p_planificados FROM curso C JOIN v_curso v on c.id_curso=v.id_curso_original WHERE v.id_vcurso=%s ''',(id_curso,))
         planificados=cursor.fetchone()
 
         totalplanificados=planificados[0]+1
@@ -1268,7 +1268,7 @@ def agregartrabajador():
 def estadisticas():
 
     try:
-
+        otrotitulo=""
         desde=request.form['desde']
         hasta=request.form['hasta']
         mostrar=request.form['stat']
@@ -1287,6 +1287,8 @@ def estadisticas():
         cursor.execute(''' SELECT COUNT(*) FROM v_curso v WHERE v.status='finalizado' ''')
         finalizados=cursor.fetchone()
 
+        valorestriple=[]
+        valores=[]
 
         #HORAS DE FORMACION POR GERENCIA
         if mostrar=='stat3':
@@ -1359,9 +1361,30 @@ def estadisticas():
 
             titulo="Participantes Asistentes por Cursos"
 
+        elif mostrar=='stat5':
+
+            #PLANIFICADOS Y ASISTENTES DEFINITIVOS
+
+            cursor.execute('''
+            SELECT c.nombre, COUNT(tc.id_trabajador),c.p_planificados
+            FROM curso c
+            JOIN v_curso v on c.id_curso=v.id_curso_original   
+            JOIN curso_trabajador tc on v.id_vcurso=tc.id_curso
+            JOIN trabajador t on tc.id_trabajador=t.id_trabajador
+            WHERE v.status='finalizado' and tc.status='finalizado'
+            AND v.fecha_inicio>=%s AND v.fecha_fin<=%s
+            GROUP by c.nombre,c.p_planificados          
+            ''',(desde,hasta))
+
+            valorestriple=cursor.fetchall()
+
+            titulo="Participantes Asistentes y Planificados"
+            otrotitulo="Participantes planificados"
+
 
         columnas=[]
         numeros=[]
+        onumeros=[]
         for i,j in valores:
             columnas.append(i)
             numeros.append(j)
@@ -1369,7 +1392,15 @@ def estadisticas():
         print(columnas)
         print(numeros)
 
+        for i,j,k in valorestriple:
+            columnas.append(i)
+            numeros.append(j)
+            onumeros.append(k)
+
         conectar.commit()
+
+        print(onumeros)
+        print("AQUI ",otrotitulo)
     
     except Exception as e:
         print(f"Error al realizar la consulta: {e}")
@@ -1379,7 +1410,8 @@ def estadisticas():
         cursor.close()
         conectar.close()
 
-    return render_template('estadisticas.html',columnas=columnas,numeros=numeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],titulo=titulo)
+
+    return render_template('estadisticas.html',columnas=columnas,numeros=numeros,onumeros=onumeros,activos=activos[0],progreso=progreso[0],finalizados=finalizados[0],titulo=titulo,otrotitulo=otrotitulo)
 
 
 @app.route('/cal')
