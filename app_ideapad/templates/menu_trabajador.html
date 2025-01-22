@@ -64,7 +64,7 @@
             class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
             data-bs-parent="#accordionactivos"> 
                 <div class="accordion-body"> 
-                    <strong>{{ ponente }}</strong> {{ descripcion }} 
+                    <strong>{{ ponente.title() }}</strong> {{ descripcion }} 
                     {% if nombre %}
     <ul>
         {% for nom in nombre %}
@@ -103,7 +103,7 @@
             class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
             data-bs-parent="#accordionactivos"> 
                 <div class="accordion-body"> 
-                    <strong>{{ ponente }}</strong> {{ descripcion }} 
+                    <strong>{{ ponente.title() }}</strong> {{ descripcion }} 
                     {% if nombre %}
     <ul>
         {% for nom in nombre %}
@@ -142,7 +142,7 @@
             class="accordion-collapse collapse {{ 'show' if loop.first }}" aria-labelledby="headingactivos{{ loop.index }}" 
             data-bs-parent="#accordionactivos"> 
                 <div class="accordion-body"> 
-                    <strong>{{ ponente }}</strong> {{ descripcion }} 
+                    <strong>{{ ponente.title() }}</strong> {{ descripcion }} 
                     {% if nombre %}
     <ul>
         {% for nom in nombre %}

@@ -113,11 +113,11 @@
     color: white; /* Color del texto */
     font-weight: bold; /* Texto en negrita */
     padding: 15px; /* Espaciado interno */
-    transition: background-color 0.3s; /* Transición suave */
+    transition: background-color 0.1s; /* Transición suave */
 }
 
 .accordion-button:hover {
-    background-color: #0056b3; /* Color al pasar el mouse */
+    background-color: orange; /* Color al pasar el mouse */
 }
 
 .accordion-collapse {
@@ -182,13 +182,6 @@ ul li {
     font-weight: bold; /* Negrita para mayor énfasis */
     text-transform: uppercase; /* Texto en mayúsculas */
 }
-
-
-
-
-
-
-
 
 
 .accordion.activos  .accordion-button { 

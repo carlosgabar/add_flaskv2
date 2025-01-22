@@ -651,7 +651,6 @@
           <th>Minimo de Participantes</th> 
           <th>Maximo de Participantes</th> 
           <th>Acción</th>
-          <th>Editar</th> 
          
         </tr> </thead> 
         <tbody id="course-list"> {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
@@ -694,16 +693,11 @@
 
   <h2>Inscripción</h2>
 
-  <form id="agregar" action="/agregartrabajador" method="post">
-
 <div class="inputsagregar">
+
 <label for="id">ID del trabajador</label>
-<input type="number" id="id" name="id" step="1"  min="0" title="Por favor, ingrese un número entero." class="idagregar">
-<label for="id">ID del curso</label>
-<input type="number" id="idcurso" name="idcurso" step="1"  min="0" title="Por favor, ingrese un número entero." class="idagregar">
-<button class="boton" type="submit">Inscribir</button>
+<input type="number" id="id" name="id" step="1"  min="0" title="Por favor, ingrese un número entero." class="idagregar" required>
 </div>
-</form>
 <label for="status">Filtrar</label> 
 <select id="statuss" onchange="filterCoursess()"  >
 
@@ -724,7 +718,7 @@
         <th>Fecha de Fin</th> 
         <th>Minimo de Participantes</th> 
         <th>Maximo de Participantes</th> 
-        <th>Acción</th>
+        <th>Inscribir</th>
       </tr> </thead> 
       <tbody id="course-listt"> {% for id,tema,p,idversion,inicio,fin,min,max,descripcion,status,horas,canthoras,
         idoriginal,ponente,localidad,salon in listado %} 
@@ -736,11 +730,61 @@
           <td>{{ fin }}</td> 
           <td>{{ min }}</td> 
           <td>{{ max }}</td> 
-          <td>{{ estado }}</td>
+        
         </tr> {% endfor %} 
       </tbody> 
     </table> 
   </div>
+
+  <div id="modalsss" style="display:none;"> 
+    <div class="modal-content">
+      <span class="close" onclick="closeModal_A()">&times;</span>
+      <form id="versionform" action="/agregartrabajador" method="post">
+  
+        <input type="hidden" id="curso_id" name="curso_id">
+        <input type="hidden" id="curso_tema" name="curso_tema">
+        <input type="hidden" id="curso_ponente" name="curso_ponente">
+        <input type="hidden" id="curso_inicio" name="curso_inicio">
+        <input type="hidden" id="curso_fin" name="curso_fin">
+        <input type="hidden" id="trabajador_id" name="trabajador_id">
+  
+        <p id="curso-info">Se inscribirá en el curso: <strong></strong></p>
+        <p id="ponente">Ponente: <strong></strong></p>
+        <p id="fechas">Inicio: <strong></strong> Fin <strong></strong> </p>
+        
+        <div class="confirmar"><button class="boton" type="submit">Confirmar</button></div>
+      </form>
+    </div>
+  </div>
+  
+  <script>
+    function openModalsAdmin(id,ponente,tema,inicio,fin) {
+
+      const trabajadorId = document.getElementById('id').value;
+
+      console.log("ID:", id);
+      console.log("ID del Trabajador:", trabajadorId)
+      document.getElementById('curso-info').innerHTML = `Se inscribirá en el curso: <strong>${tema}</strong>`;
+      document.getElementById('ponente').innerHTML = `Ponente: <strong>${ponente}</strong>`;
+      document.getElementById('fechas').innerHTML = `Inicio: <strong>${inicio}</strong>  <strong>${fin}</strong>`;
+      document.getElementById('modalsss').style.display = 'block';
+  
+  
+      document.getElementById('curso_id').value = id;
+      document.getElementById('curso_tema').value = tema;
+      document.getElementById('curso_ponente').value = ponente;
+      document.getElementById('curso_inicio').value = inicio;
+      document.getElementById('curso_fin').value = fin;
+      document.getElementById('trabajador_id').value = trabajadorId;
+
+
+
+    }
+  
+    function closeModal_A() {
+      document.getElementById('modalsss').style.display = 'none';
+    }
+  </script>
 
   <script> 
     function filterCoursess() { 
@@ -755,6 +799,50 @@
     
     xhr.send('statuss=' + status); } 
     </script>
+
+<style>
+/* Estilos para el modal */
+#modalsss {
+  display: none; /* Oculto por defecto */
+  position: fixed; /* Fijo en la pantalla */
+  z-index: 1000; /* Asegura que se muestre sobre otros elementos */
+  left: 0;
+  top: 0;
+  width: 100%; /* Ancho completo */
+  height: 100%; /* Alto completo */
+  overflow-y:scroll;
+ 
+  background-color: rgb(0,0,0); /* Color de fondo negro */
+  background-color: rgba(0,0,0,0.4); /* Fondo negro con opacidad */
+}
+
+.modal-content {
+  background-color: #fefefe;
+  margin: 5% auto; /* Centrado vertical */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Ancho del modal */
+  max-width: 600px; /* Ancho máximo */
+  border-radius: 8px; /* Bordes redondeados */
+  box-shadow: 0 5px 15px rgba(0,0,0,0.3); /* Sombra */
+}
+
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+
+</style>
 
 </div>  
 
@@ -790,7 +878,7 @@
     <div class="bloquetotal">
 
         <h4>Total</h4>
-        <h1></h1>
+        <h1>{{total}}</h1>
 
     </div>
 

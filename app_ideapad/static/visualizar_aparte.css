@@ -7,7 +7,8 @@
     margin-left: 5px;
     text-align: center;
     height: 300px;
-    padding: 5px;
+    padding: 15px; /* Aumentar el padding */
+    border-radius: 8px; /* Bordes redondeados */
     
 }
 
@@ -15,54 +16,18 @@
 
     display: flex;
     margin-top: 20px;
-    margin-bottom: 20px;
-
-}
-
-table{
-
-    border-collapse: collapse;
-    width: 50%;
-    margin:auto;
-    margin-top: 10px;
-
-}
-
-table th,td{
-
-    border: 1px solid;
-    background-color:aliceblue;
-    padding: 3px;
-    text-align: left;
-
-}
-
-
-.contenidocurso{
-
-    color: darkcyan;
-    margin-left: 150px;
+    margin-bottom: 15px;
+    gap: 20px; /* Espacio entre elementos */
 
 }
 
 .valorescurso{
 
     color: darkcyan;
-}
-
-.contenidocurso .descripcion{
-
-
-    background:aliceblue;
-    width: 600px;
-    padding: 10px;
-    
-
-}
-
-.contenidocurso h3{
-
-    text-align: center;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para profundidad */
+    background: #f9f9f9; /* Color de fondo más suave */
+    padding: 20px; /* Espaciado interno */
+    margin-top: 1%;
 
 }
 
@@ -71,19 +36,13 @@ table th,td{
     text-align:center;
 }
 
-.listadoinscritos h4{
+.listado h4{
 
     text-align: center;
 
 }
 
-.listadoinscritos table{
 
-    margin-bottom: 20px;
-    text-align: center;
-    width: 150px;
-
-}
 
 .todo{
 
@@ -94,6 +53,10 @@ table th,td{
 .titulos{
 
     text-align: center;
+    font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
+    font-weight: 200;
+    color:darkcyan;
+    
 
 }
 
@@ -114,3 +77,87 @@ table th,td{
     margin-bottom: 20px;
 
 }
+
+ /* ESTILO PARA TRABAJADORES INSCRITOS */
+
+
+.listado {
+    margin: auto;
+    width: 100%; /* Aumentar el ancho para que se vea mejor */
+    padding: 20px; /* Añadir espacio interno */
+    border-radius: 8px; /* Bordes redondeados */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1); /* Sombra suave */
+    background-color: #f9f9f9; /* Fondo claro para resaltar */
+  }
+  
+  .listado table {
+    border-collapse: collapse;
+    width: 100%; /* Usar todo el ancho disponible */
+    margin-top: 10px;
+  }
+  
+  .listado th, .listado td {
+    border: 1px solid rgb(200, 200, 200); /* Color de borde más suave */
+    padding: 10px; /* Espaciado interno mayor */
+    text-align: left;
+    background-color: #ffffff; /* Fondo blanco para las celdas */
+    transition: background-color 0.3s; /* Transición suave para el hover */
+  }
+  
+  .listado th {
+    background-color: #4CAF50; /* Color de fondo para el encabezado */
+    color: white; /* Color del texto en el encabezado */
+  }
+  
+  .listado tr:hover td {
+    background-color: #f1f1f1; /* Color de fondo al pasar el mouse */
+  }
+  
+  .listado button {
+    background-color: #007BFF; /* Color de fondo del botón */
+    color: white; /* Color del texto del botón */
+    border: none; /* Sin borde */
+    padding: 10px 15px; /* Espaciado interno del botón */
+    border-radius: 5px; /* Bordes redondeados del botón */
+    cursor: pointer; /* Cambiar el cursor al pasar sobre el botón */
+    transition: background-color 0.3s; /* Transición suave */
+    text-align: center;
+  }
+  
+  .listado button:hover {
+    background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
+  }
+
+
+  /* ESTILO PARA PARRAFO */
+
+  .contenidocurso {
+    color: darkcyan;
+    margin: 20px auto; /* Centrar el contenedor */
+    max-width: 800px; /* Limitar el ancho */
+    padding: 20px; /* Espaciado interno */
+    border-radius: 10px; /* Bordes redondeados */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Sombra para profundidad */
+    background: #f9f9f9; /* Color de fondo más suave */
+
+}
+
+.contenidocurso h3 {
+    text-align: center;
+    font-size: 24px; /* Tamaño de fuente más grande */
+    margin-bottom: 15px; /* Espacio inferior */
+    color:darkcyan; /* Color del título */
+}
+
+.contenidocurso .descripcion {
+    background: aliceblue;
+    border-radius: 8px; /* Bordes redondeados */
+    padding: 15px; /* Aumentar el padding */
+    line-height: 1.6; /* Mejora la legibilidad */
+    font-size: 16px; /* Ajustar el tamaño de fuente */
+}
+
+.contenidocurso .descripcion p {
+    margin-bottom: 10px; /* Espacio entre párrafos */
+}
+

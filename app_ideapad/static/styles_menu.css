@@ -1,3 +1,6 @@
+/* AQUI EL CSS PARA LAS OPCIONES */
+
+
 body {
     background-image: url("img/fondo_imagen.jpg");
     background-repeat: no-repeat;
@@ -20,7 +23,7 @@ body {
   padding:10px;
   background:aliceblue;
   width: 300px;
-  height: 520px;
+  height: 700px;
   display: inline-block;
   font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif;
   
@@ -114,6 +117,12 @@ body {
 
 }
 
+/* FIN CSS OPCIONES */
+
+
+
+/* AQUI EL CSS DE LISTAR */
+
 
 
 .listado {
@@ -162,53 +171,8 @@ body {
   background-color: #0056b3; /* Color de fondo del botón al pasar el mouse */
 }
 
-.jugadores .arreglarid input{
-  
-  width:55px;
-  margin-bottom: 10px;
 
-}
-
-.jugadores .arreglarboton{
-  margin-top: 10px;
-  display: block;
-  margin-left:220px;
-
-}
-
-.golesjugador input{
-  
-  width:55px;
-  margin-bottom: 10px;
-
-}
-
-.golesjugador .arreglarbotongoles{
-  margin-top: 10px;
- 
-  margin-left:220px;
-
-}
-
-.boton_admin{
-
-
-    margin-left: 1000px;
-
-}
-
-.boton_admin{
-
-
-    margin-left: 1000px;
-
-}
-.boton_trabajador{
-
-
-    margin-left: 900px;
-
-}
+/* HASTA AQUI EL CSS DE LISTAR */
 
 
 
@@ -221,12 +185,8 @@ body {
 }
 
 
+/* ESTO ES PARA EL FORMULARIO DE CREAR CIERTOS LABEL ESTETICOS */
 
-.linea{
-
-  margin-top: 2%;
-
-}
 
 .fechas{
 
@@ -299,6 +259,12 @@ body {
 .tiempo input#canthoras { width: 10% }
 
 
+
+/* FIN CSS PARA EL FORMULARIO CREAR */
+
+
+
+
 .separarstats{
 
   display: block;
@@ -323,6 +289,9 @@ body {
 
 }
 
+
+
+/* LO PRINCIPAL DEL FORMULARIO CREAR */
 
 .ordenar {
   margin: auto;
@@ -406,3 +375,6 @@ body {
 .tiempo input#canthoras {
   width: 20%; /* Ajustar el ancho de la cantidad de horas */
 }
+
+
+/* FIN DE LO PRINCIPAL DEL FORMULARIO CREAR */

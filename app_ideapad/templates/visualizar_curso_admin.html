@@ -7,7 +7,7 @@
     {%  for id,tema,p,idversion,inicio,fin,min,max,descripcion,estado,horas,canthoras,idoriginal,ponente,localidad,salon in curso %} 
 
     <h1>{{tema}}</h1>
-    <h3>Ponente: {{ponente}}</h3>
+    <h3>Ponente: {{ponente.title()}}</h3>
 
     {% endfor %}
         </div>
@@ -26,6 +26,7 @@
         <p class="Maximo">Maximo de participantes: {{max}}</p>
         <p class="Fecha_inicio">Fecha de Inicio: {{inicio}}</p>
         <p class="Fecha_fin">Fecha de Fin: {{fin}}</p>
+        <p class="Status">Status: {{estado}}</p>
 
     {% endfor %}
 
@@ -60,7 +61,7 @@
 </div>
 
 
-<div class="listadoinscritos">
+<div class="listado">
 
 <h4>Trabajadores inscritos</h4>
 
